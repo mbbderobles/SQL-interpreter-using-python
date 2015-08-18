@@ -38,7 +38,12 @@ t_UPDATE = r'UPDATE|update';
 t_DELETE = r'DELETE|delete';
 t_FROM = r'FROM|from'
 t_STRING = r'\".*"|\'.*\''
-t_NUMBER = r'\d+'
+
+def t_NUMBER(t):
+	r'\d+'
+	t.value = int(t.value)
+	return t
+
 t_WHERE = r'WHERE|where';
 t_JOIN = r'JOIN|join'
 t_ON = r'ON|on'

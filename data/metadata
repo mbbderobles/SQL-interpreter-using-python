@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 sales_h
 or_no,varchar,20
 register_date,date,0
@@ -29,35 +28,3 @@ item_description,varchar,60
 latest_qoh,int,10
 selling_price,float,5,10
 item_status,varchar,2
-=======
-student
-sNo,varchar,10,PK
-sName,varchar,11
-sAge,int,2
-sSex,varchar,1
-sBdate,date,0
-course
-cCode,varchar,20,PK
-cTitle,varchar,100
-section,varchar,5
-tStart,varchar,10
-tEnd,varchar,10
-degree
-dId,int,2,PK
-degCode,varchar,10
-degDesc,varchar,30
-tUnits,int,3
-cVer,varchar,10
-college
-colId,int,2,PK
-colCode,varchar,10
-colTitle,varchar,30
-deptNo,int,2
-perNo,int,5
-teacher
-tName,varchar,30
-tNo,int,10,PK
-tAge,int,2
-tSex,varchar,1
-tBdate,date,0
->>>>>>> b937df2a03503806eb5c49319cc8997bdf508f24

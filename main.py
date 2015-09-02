@@ -15,6 +15,7 @@ import lexer, parser
 # start ##########################################
 
 query = ''
+tokens = [] #list of tokens
 os.system('clear')
 
 while True:
@@ -32,8 +33,12 @@ while True:
 			print("   ERROR: Invalid token near", error)
 		else:
 			print('   All tokens valid')
-			parser.parse(query)
-		#if correct:
+			tokens = parser.parse(query)
+			if len(tokens) !=0: #the query is valid
+				print("   Syntax is valid")
+			else:
+				print("   Syntax is invalid")
+ 		#if correct:
 			#start query optimization and evaluation
 
 

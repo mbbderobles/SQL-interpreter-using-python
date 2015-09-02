@@ -60,13 +60,16 @@ def p_expression(p):
 
 def p_error(p):
 	if p:
-		print("Syntax error at", p.value)
+		print("   Syntax error at", p.value)
 	else:
-		print("Syntax error at EOF")
+		print("   Syntax error at EOF")
+
+
+parser = yacc.yacc()
 
 def parse(query):
 	global strings
-	yacc.yacc()
-	yacc.parse(query)
-	print(strings)
 	strings = []
+	parser.parse(query)
+	return strings
+

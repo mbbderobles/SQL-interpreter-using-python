@@ -24,19 +24,25 @@ def getColumns(tableName,tables):
 		cols.append(temp[i][0]) #sub zero since 1st element is columnName
 	return cols
 
-def printTableRows(rows,cols):
+def addTableToHash(data, tbl, rows):
+	data[tbl] = rows
+	return data
+
+def printTableRows(data,tbl,cols):
 	for k in cols:
 		print("\t%s\t" % k.upper(), end="")
 	print()
-	for k in rows.keys():
+	for k in data[tbl].keys():
 		print("\t%s\t " % k, end="")
 		i=1
-		for j in rows[k]:
-			print("\t%s\t " % rows[k][cols[i]], end="")
+		for j in data[tbl][k]:
+			print("\t%s\t " % data[tbl][k][cols[i]], end="")
 			i = i+1
 		print()
-		
-tb = readMeta.readMetaData()
-cols = getColumns("student",tb)
-rows = getRowsFromTable("student",cols)
-printTableRows(rows,cols)
+
+data = {}		
+tb = readMeta.tb
+cols = getColumns("sales_h",tb)
+sales_h = getRowsFromTable("sales_h",cols)
+data = addTableToHash(data,"sales_h",sales_h)
+#printTableRows(data,"sales_h",cols)

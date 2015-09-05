@@ -1,6 +1,7 @@
-import readTable
+import readTable,sqldelete
 
-query = ["UPDATE","sales_h","SET","register_date","=","11/11/2015","cashier_id","=","0000"];
+#query = ["UPDATE","sales_h","SET","register_date","=","11/11/2015","cashier_id","=","0000"];
+query = ["Delete","*", "from", "sales_h"]; #still working on the where expression
 
 def main():
 	if(query[0].lower() == "select"):
@@ -9,7 +10,9 @@ def main():
 		update(query)
 	else:
 		print("delete function here")
-
+		sqldelete.processDelQuery(readTable.data,query)
+		#to check print the dictionary for sales_h
+		
 
 def update(query):
 	i = 3											# Start with 4th element in the list

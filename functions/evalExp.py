@@ -1,11 +1,10 @@
-import readTable,sqldelete
+import readTable,sqldelete,sqlselect
 
-#query = ["UPDATE","sales_h","SET","register_date","=","11/11/2015","cashier_id","=","0000"];
-query = ["Delete","*", "from", "sales_h"]; #still working on the where expression
+query = ['select','*','from','sales_h',',','sales_d'];
 
-def main():
+def main(query):
 	if(query[0].lower() == "select"):
-		print("select function here")
+		sqlselect.evaluate(query[1:])
 	elif(query[0].lower() == "update"):
 		update(query)
 	else:
@@ -24,6 +23,7 @@ def update(query):
 				readTable.data[query[1]][j][query[i]] = query[i+2]
 			i+=3
 
-main()
-cols = readTable.getColumns("sales_h",readTable.tb)
-readTable.printTableRows(readTable.data,"sales_h",cols)
+main(query)
+print()
+#query2 = ['select','link_or','register_date','or_no','from','sales_h',',','sales_d']
+#main(query2)

@@ -1,16 +1,13 @@
 import readMeta
 
 def getRowsFromTable(tblname,columns):
-	fReader = open('./../data/'+tblname+'.txt','r')
+	fReader = open('./data/'+tblname+'.txt','r')
 	tblData = {}
 	count = 0
 	for line in fReader:
 		if(line[-1]=='\n'):
 			line = line[:-1]
 		data = line.split('|')
-		if(data[0] in tblData.keys()):
-			print(data[0])
-			count+=1
 		tblData[data[0]] = {}
 		i = 0
 		while i<len(columns):
@@ -19,7 +16,7 @@ def getRowsFromTable(tblname,columns):
 				continue
 			tblData[data[0]][columns[i]] = data[i]
 			i = i+1
-	return tblData,count
+	return tblData
 
 def getColumns(tableName,tables):
 	cols = []

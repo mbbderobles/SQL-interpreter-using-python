@@ -1,7 +1,7 @@
 #read metadata
 
 def readMetaData():
-	fReader = open("./../data/metadata","r")
+	fReader = open("./data/metadata","r")
 	counter = 0
 	tables = {} #list of tables from the metadata
 	tbl = '' #temp var for the name of the tables

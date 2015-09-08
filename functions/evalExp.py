@@ -1,10 +1,10 @@
 import readTable,sqldelete,sqlselect
 
-query = ['select','*','from','sales_h',',','sales_d'];
+#query = ['select','*','from','sales_h',',','sales_d'];
 
-def main(query):
+def main(query,):
 	if(query[0].lower() == "select"):
-		sqlselect.evaluate(query[1:])
+		sqlselect.evaluate(query[1:],readTable.tb,readTable.data)
 	elif(query[0].lower() == "update"):
 		update(query)
 	else:
@@ -23,7 +23,7 @@ def update(query):
 				readTable.data[query[1]][j][query[i]] = query[i+2]
 			i+=3
 
-main(query)
-print()
+#main(query)
+#print()
 #query2 = ['select','link_or','register_date','or_no','from','sales_h',',','sales_d']
 #main(query2)

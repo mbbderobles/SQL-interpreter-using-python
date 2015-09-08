@@ -33,7 +33,7 @@ def printTableRows(data,tbl,cols):
 		print("\t%s\t" % k.upper(), end="")
 	print()
 	for k in data[tbl].keys():
-		print("\t%s\t " % k, end="")
+		print("\t%s\t " % k.upper(), end="")
 		i=1
 		for j in data[tbl][k]:
 			print("\t%s\t " % data[tbl][k][cols[i]], end="")

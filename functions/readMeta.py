@@ -1,7 +1,7 @@
 #read metadata
 
 def readMetaData():
-	fReader = open("./../data/metadata","r")
+	fReader = open("./data/metadata","r")
 	counter = 0
 	tables = {} #list of tables from the metadata
 	tbl = '' #temp var for the name of the tables
@@ -35,12 +35,3 @@ def readMetaData():
 
 tb = readMetaData()
 
-#prints the table data
-for i in tb.keys():
-	print("\n",i.upper(),": ") #prints the table name
-	print("\t\tCOLUMN\t\t\t\tTYPE\t\t\t\tLENGTH\t\t\t\tISPK") #prints the headers
-	for j in tb[i].keys():	#prints each column details in a row
-		for k in tb[i][j]:
-			print("\t%20s\t" %k,end=" ")
-		print()
-	print()

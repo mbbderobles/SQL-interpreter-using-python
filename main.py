@@ -10,7 +10,7 @@ sys.path.insert(0,'./functions/')
 
 # All user-defined libraries (.py) must be placed in the functions folder.
 # If the python file will be used here, import it below:
-import lexer, parser 
+import lexer, parser, evalExp
 
 # start ##########################################
 
@@ -36,6 +36,7 @@ while True:
 			tokens = parser.parse(query)
 			if len(tokens) !=0: #the query is valid
 				print("   Syntax is valid")
+				evalExp.main(tokens)
 			else:
 				print("   Syntax is invalid")
  		#if correct:

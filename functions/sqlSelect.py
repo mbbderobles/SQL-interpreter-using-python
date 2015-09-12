@@ -1,4 +1,4 @@
-from tabulate import tabulate
+#from tabulate import tabulate
 
 tb = {}
 data = {}
@@ -116,7 +116,7 @@ def normalSelect(tokens):
 				temp.append(data[tables][i][col])
 		printData.append(temp)
 	print()
-	print(tabulate(printData,headers=cols,tablefmt="psql"))
+	#print(tabulate(printData,headers=cols,tablefmt="psql"))
 	print("   ",counter," rows returned.\n")
 
 def evaluate(tokens,tables,rows):

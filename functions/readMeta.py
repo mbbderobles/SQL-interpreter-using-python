@@ -33,3 +33,4 @@ def readMetaData():
 
 	return tables
 
+tb = readMetaData()

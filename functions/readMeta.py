@@ -24,9 +24,9 @@ def readMetaData():
 				tables[tbl][counter].append(cols[2])
 
 			if(counter == 0):						#first column written is always the primary key
-				tables[tbl][counter].append(True)
+				tables[tbl][counter].append("True")
 			else:
-				tables[tbl][counter].append(False)
+				tables[tbl][counter].append("False")
 
 		
 			counter += 1

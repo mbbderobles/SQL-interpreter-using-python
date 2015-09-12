@@ -12,7 +12,8 @@ def p_program(p):
 	'''program : statement SEMICOLON'''
 
 def p_statement(p):
-	'''statement : SELECT select_statement'''
+	'''statement : SELECT select_statement
+		| DESC desc_statement'''
 #		| UPDATE update_statement
 #		| DELETE delete_statement'''
 	strings.insert(0,p[1])
@@ -30,6 +31,11 @@ def p_select_statement(p):
 	else:
 		strings.append(list(cols))
 		cols = []
+
+def p_desc_statement(p):
+	'''desc_statement : IDENTIFIER'''
+	global cols
+	strings.insert(0,p[1])
 
 def p_columns(p):
 	'''columns : IDENTIFIER COMMA columns

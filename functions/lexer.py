@@ -28,7 +28,8 @@ tokens = (
 	'IDENTIFIER',
 	'AND',
 	'OR',
-	'SET'
+	'SET',
+	'DESC'
 )
 
 # Regular expression for each token ########
@@ -36,6 +37,7 @@ tokens = (
 t_SELECT = r'SELECT|select'
 t_UPDATE = r'UPDATE|update';
 t_DELETE = r'DELETE|delete';
+t_DESC = r'DESC|desc';
 t_FROM = r'FROM|from'
 t_STRING = r'\".*"|\'.*\''
 
@@ -59,7 +61,7 @@ t_AND = r'AND|and'
 t_OR = r'OR|or'
 t_SET = r'SET|set'
 #t_IDENTIFIER = r'[a-zA-Z_]+[^ \t\n=<,>!\'\";\~]*'
-t_IDENTIFIER = r'\b(?:(?!select|update|delete|from|where|join|on|and|or|set|SELECT|UPDATE|DELETE|FROM|WHERE|JOIN|ON|AND|OR|SET)\w)+[^ \t\n=<,>!\'\";\~]*\b'
+t_IDENTIFIER = r'\b(?:(?!select|update|delete|from|where|join|on|and|or|set|desc|SELECT|UPDATE|DELETE|FROM|WHERE|JOIN|ON|AND|OR|SET|DESC)\w)+[^ \t\n=<,>!\'\";\~]*\b'
 
 t_ignore = ' \t';
 

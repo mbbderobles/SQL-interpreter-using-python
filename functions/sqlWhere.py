@@ -43,6 +43,6 @@ def processWhereStmt(whereStmt):
 sampleStmt = ["where", "cashier_id", "=", "1054", "and", "sales_gross_amount", "=", "220", "or", "customer_id", "=", "0" ]
 #remove "where" element
 sampleStmt.remove("where")
-processWhereStmt(sampleStmt)
+#processWhereStmt(sampleStmt)
 
 

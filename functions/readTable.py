@@ -1,8 +1,9 @@
 import readMeta
 
 def getRowsFromTable(tblname,columns):
-	fReader = open('./../data/'+tblname+'.txt','r')
+	fReader = open('./data/'+tblname+'.txt','r')
 	tblData = {}
+	count = 0
 	for line in fReader:
 		if(line[-1]=='\n'):
 			line = line[:-1]
@@ -24,9 +25,6 @@ def getColumns(tableName,tables):
 		cols.append(temp[i][0]) #sub zero since 1st element is columnName
 	return cols
 
-def addTableToHash(data, tbl, rows):
-	data[tbl] = rows
-	return data
 
 def printTableRows(data,tbl,cols):
 	for k in cols:
@@ -44,5 +42,8 @@ data = {}
 tb = readMeta.tb
 cols = getColumns("sales_h",tb)
 sales_h = getRowsFromTable("sales_h",cols)
-data = addTableToHash(data,"sales_h",sales_h)
-#printTableRows(data,"sales_h",cols)
+
+for i in tb.keys():
+	cols = getColumns(i,tb)
+	rows = getRowsFromTable(i,cols)
+	data[i] = rows

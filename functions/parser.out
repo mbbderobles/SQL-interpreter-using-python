@@ -1,0 +1,414 @@
+Created by PLY version 3.7 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    JOIN
+    DELETE
+    ON
+    SET
+    UPDATE
+    NOT
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> statement SEMICOLON
+Rule 2     statement -> SELECT select_statement
+Rule 3     select_statement -> ASTERISK FROM IDENTIFIER
+Rule 4     select_statement -> columns FROM IDENTIFIER
+Rule 5     select_statement -> ASTERISK FROM IDENTIFIER where_statement
+Rule 6     select_statement -> columns FROM IDENTIFIER where_statement
+Rule 7     columns -> IDENTIFIER COMMA columns
+Rule 8     columns -> IDENTIFIER
+Rule 9     where_statement -> WHERE expression
+Rule 10    expression -> expression AND expression
+Rule 11    expression -> expression OR expression
+Rule 12    expression -> IDENTIFIER EQUAL NUMBER
+Rule 13    expression -> IDENTIFIER EQUAL STRING
+Rule 14    expression -> IDENTIFIER LESSTHAN NUMBER
+Rule 15    expression -> IDENTIFIER GREATERTHAN NUMBER
+Rule 16    expression -> IDENTIFIER NOTEQUAL STRING
+Rule 17    expression -> IDENTIFIER NOTEQUAL NUMBER
+
+Terminals, with rules where they appear
+
+AND                  : 10
+ASTERISK             : 3 5
+COMMA                : 7
+DELETE               : 
+EQUAL                : 12 13
+FROM                 : 3 4 5 6
+GREATERTHAN          : 15
+IDENTIFIER           : 3 4 5 6 7 8 12 13 14 15 16 17
+JOIN                 : 
+LESSTHAN             : 14
+NOT                  : 
+NOTEQUAL             : 16 17
+NUMBER               : 12 14 15 17
+ON                   : 
+OR                   : 11
+SELECT               : 2
+SEMICOLON            : 1
+SET                  : 
+STRING               : 13 16
+UPDATE               : 
+WHERE                : 9
+error                : 
+
+Nonterminals, with rules where they appear
+
+columns              : 4 6 7
+expression           : 9 10 10 11 11
+program              : 0
+select_statement     : 2
+statement            : 1
+where_statement      : 5 6
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . statement SEMICOLON
+    (2) statement -> . SELECT select_statement
+
+    SELECT          shift and go to state 3
+
+    program                        shift and go to state 1
+    statement                      shift and go to state 2
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> statement . SEMICOLON
+
+    SEMICOLON       shift and go to state 4
+
+
+state 3
+
+    (2) statement -> SELECT . select_statement
+    (3) select_statement -> . ASTERISK FROM IDENTIFIER
+    (4) select_statement -> . columns FROM IDENTIFIER
+    (5) select_statement -> . ASTERISK FROM IDENTIFIER where_statement
+    (6) select_statement -> . columns FROM IDENTIFIER where_statement
+    (7) columns -> . IDENTIFIER COMMA columns
+    (8) columns -> . IDENTIFIER
+
+    ASTERISK        shift and go to state 7
+    IDENTIFIER      shift and go to state 8
+
+    columns                        shift and go to state 6
+    select_statement               shift and go to state 5
+
+state 4
+
+    (1) program -> statement SEMICOLON .
+
+    $end            reduce using rule 1 (program -> statement SEMICOLON .)
+
+
+state 5
+
+    (2) statement -> SELECT select_statement .
+
+    SEMICOLON       reduce using rule 2 (statement -> SELECT select_statement .)
+
+
+state 6
+
+    (4) select_statement -> columns . FROM IDENTIFIER
+    (6) select_statement -> columns . FROM IDENTIFIER where_statement
+
+    FROM            shift and go to state 9
+
+
+state 7
+
+    (3) select_statement -> ASTERISK . FROM IDENTIFIER
+    (5) select_statement -> ASTERISK . FROM IDENTIFIER where_statement
+
+    FROM            shift and go to state 10
+
+
+state 8
+
+    (7) columns -> IDENTIFIER . COMMA columns
+    (8) columns -> IDENTIFIER .
+
+    COMMA           shift and go to state 11
+    FROM            reduce using rule 8 (columns -> IDENTIFIER .)
+
+
+state 9
+
+    (4) select_statement -> columns FROM . IDENTIFIER
+    (6) select_statement -> columns FROM . IDENTIFIER where_statement
+
+    IDENTIFIER      shift and go to state 12
+
+
+state 10
+
+    (3) select_statement -> ASTERISK FROM . IDENTIFIER
+    (5) select_statement -> ASTERISK FROM . IDENTIFIER where_statement
+
+    IDENTIFIER      shift and go to state 13
+
+
+state 11
+
+    (7) columns -> IDENTIFIER COMMA . columns
+    (7) columns -> . IDENTIFIER COMMA columns
+    (8) columns -> . IDENTIFIER
+
+    IDENTIFIER      shift and go to state 8
+
+    columns                        shift and go to state 14
+
+state 12
+
+    (4) select_statement -> columns FROM IDENTIFIER .
+    (6) select_statement -> columns FROM IDENTIFIER . where_statement
+    (9) where_statement -> . WHERE expression
+
+    SEMICOLON       reduce using rule 4 (select_statement -> columns FROM IDENTIFIER .)
+    WHERE           shift and go to state 16
+
+    where_statement                shift and go to state 15
+
+state 13
+
+    (3) select_statement -> ASTERISK FROM IDENTIFIER .
+    (5) select_statement -> ASTERISK FROM IDENTIFIER . where_statement
+    (9) where_statement -> . WHERE expression
+
+    SEMICOLON       reduce using rule 3 (select_statement -> ASTERISK FROM IDENTIFIER .)
+    WHERE           shift and go to state 16
+
+    where_statement                shift and go to state 17
+
+state 14
+
+    (7) columns -> IDENTIFIER COMMA columns .
+
+    FROM            reduce using rule 7 (columns -> IDENTIFIER COMMA columns .)
+
+
+state 15
+
+    (6) select_statement -> columns FROM IDENTIFIER where_statement .
+
+    SEMICOLON       reduce using rule 6 (select_statement -> columns FROM IDENTIFIER where_statement .)
+
+
+state 16
+
+    (9) where_statement -> WHERE . expression
+    (10) expression -> . expression AND expression
+    (11) expression -> . expression OR expression
+    (12) expression -> . IDENTIFIER EQUAL NUMBER
+    (13) expression -> . IDENTIFIER EQUAL STRING
+    (14) expression -> . IDENTIFIER LESSTHAN NUMBER
+    (15) expression -> . IDENTIFIER GREATERTHAN NUMBER
+    (16) expression -> . IDENTIFIER NOTEQUAL STRING
+    (17) expression -> . IDENTIFIER NOTEQUAL NUMBER
+
+    IDENTIFIER      shift and go to state 19
+
+    expression                     shift and go to state 18
+
+state 17
+
+    (5) select_statement -> ASTERISK FROM IDENTIFIER where_statement .
+
+    SEMICOLON       reduce using rule 5 (select_statement -> ASTERISK FROM IDENTIFIER where_statement .)
+
+
+state 18
+
+    (9) where_statement -> WHERE expression .
+    (10) expression -> expression . AND expression
+    (11) expression -> expression . OR expression
+
+    SEMICOLON       reduce using rule 9 (where_statement -> WHERE expression .)
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+
+
+state 19
+
+    (12) expression -> IDENTIFIER . EQUAL NUMBER
+    (13) expression -> IDENTIFIER . EQUAL STRING
+    (14) expression -> IDENTIFIER . LESSTHAN NUMBER
+    (15) expression -> IDENTIFIER . GREATERTHAN NUMBER
+    (16) expression -> IDENTIFIER . NOTEQUAL STRING
+    (17) expression -> IDENTIFIER . NOTEQUAL NUMBER
+
+    EQUAL           shift and go to state 24
+    LESSTHAN        shift and go to state 23
+    GREATERTHAN     shift and go to state 25
+    NOTEQUAL        shift and go to state 22
+
+
+state 20
+
+    (10) expression -> expression AND . expression
+    (10) expression -> . expression AND expression
+    (11) expression -> . expression OR expression
+    (12) expression -> . IDENTIFIER EQUAL NUMBER
+    (13) expression -> . IDENTIFIER EQUAL STRING
+    (14) expression -> . IDENTIFIER LESSTHAN NUMBER
+    (15) expression -> . IDENTIFIER GREATERTHAN NUMBER
+    (16) expression -> . IDENTIFIER NOTEQUAL STRING
+    (17) expression -> . IDENTIFIER NOTEQUAL NUMBER
+
+    IDENTIFIER      shift and go to state 19
+
+    expression                     shift and go to state 26
+
+state 21
+
+    (11) expression -> expression OR . expression
+    (10) expression -> . expression AND expression
+    (11) expression -> . expression OR expression
+    (12) expression -> . IDENTIFIER EQUAL NUMBER
+    (13) expression -> . IDENTIFIER EQUAL STRING
+    (14) expression -> . IDENTIFIER LESSTHAN NUMBER
+    (15) expression -> . IDENTIFIER GREATERTHAN NUMBER
+    (16) expression -> . IDENTIFIER NOTEQUAL STRING
+    (17) expression -> . IDENTIFIER NOTEQUAL NUMBER
+
+    IDENTIFIER      shift and go to state 19
+
+    expression                     shift and go to state 27
+
+state 22
+
+    (16) expression -> IDENTIFIER NOTEQUAL . STRING
+    (17) expression -> IDENTIFIER NOTEQUAL . NUMBER
+
+    STRING          shift and go to state 28
+    NUMBER          shift and go to state 29
+
+
+state 23
+
+    (14) expression -> IDENTIFIER LESSTHAN . NUMBER
+
+    NUMBER          shift and go to state 30
+
+
+state 24
+
+    (12) expression -> IDENTIFIER EQUAL . NUMBER
+    (13) expression -> IDENTIFIER EQUAL . STRING
+
+    NUMBER          shift and go to state 32
+    STRING          shift and go to state 31
+
+
+state 25
+
+    (15) expression -> IDENTIFIER GREATERTHAN . NUMBER
+
+    NUMBER          shift and go to state 33
+
+
+state 26
+
+    (10) expression -> expression AND expression .
+    (10) expression -> expression . AND expression
+    (11) expression -> expression . OR expression
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMICOLON       reduce using rule 10 (expression -> expression AND expression .)
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+
+  ! AND             [ reduce using rule 10 (expression -> expression AND expression .) ]
+  ! OR              [ reduce using rule 10 (expression -> expression AND expression .) ]
+
+
+state 27
+
+    (11) expression -> expression OR expression .
+    (10) expression -> expression . AND expression
+    (11) expression -> expression . OR expression
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    SEMICOLON       reduce using rule 11 (expression -> expression OR expression .)
+    AND             shift and go to state 20
+    OR              shift and go to state 21
+
+  ! AND             [ reduce using rule 11 (expression -> expression OR expression .) ]
+  ! OR              [ reduce using rule 11 (expression -> expression OR expression .) ]
+
+
+state 28
+
+    (16) expression -> IDENTIFIER NOTEQUAL STRING .
+
+    AND             reduce using rule 16 (expression -> IDENTIFIER NOTEQUAL STRING .)
+    OR              reduce using rule 16 (expression -> IDENTIFIER NOTEQUAL STRING .)
+    SEMICOLON       reduce using rule 16 (expression -> IDENTIFIER NOTEQUAL STRING .)
+
+
+state 29
+
+    (17) expression -> IDENTIFIER NOTEQUAL NUMBER .
+
+    AND             reduce using rule 17 (expression -> IDENTIFIER NOTEQUAL NUMBER .)
+    OR              reduce using rule 17 (expression -> IDENTIFIER NOTEQUAL NUMBER .)
+    SEMICOLON       reduce using rule 17 (expression -> IDENTIFIER NOTEQUAL NUMBER .)
+
+
+state 30
+
+    (14) expression -> IDENTIFIER LESSTHAN NUMBER .
+
+    AND             reduce using rule 14 (expression -> IDENTIFIER LESSTHAN NUMBER .)
+    OR              reduce using rule 14 (expression -> IDENTIFIER LESSTHAN NUMBER .)
+    SEMICOLON       reduce using rule 14 (expression -> IDENTIFIER LESSTHAN NUMBER .)
+
+
+state 31
+
+    (13) expression -> IDENTIFIER EQUAL STRING .
+
+    AND             reduce using rule 13 (expression -> IDENTIFIER EQUAL STRING .)
+    OR              reduce using rule 13 (expression -> IDENTIFIER EQUAL STRING .)
+    SEMICOLON       reduce using rule 13 (expression -> IDENTIFIER EQUAL STRING .)
+
+
+state 32
+
+    (12) expression -> IDENTIFIER EQUAL NUMBER .
+
+    AND             reduce using rule 12 (expression -> IDENTIFIER EQUAL NUMBER .)
+    OR              reduce using rule 12 (expression -> IDENTIFIER EQUAL NUMBER .)
+    SEMICOLON       reduce using rule 12 (expression -> IDENTIFIER EQUAL NUMBER .)
+
+
+state 33
+
+    (15) expression -> IDENTIFIER GREATERTHAN NUMBER .
+
+    AND             reduce using rule 15 (expression -> IDENTIFIER GREATERTHAN NUMBER .)
+    OR              reduce using rule 15 (expression -> IDENTIFIER GREATERTHAN NUMBER .)
+    SEMICOLON       reduce using rule 15 (expression -> IDENTIFIER GREATERTHAN NUMBER .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for AND in state 26 resolved as shift
+WARNING: shift/reduce conflict for OR in state 26 resolved as shift
+WARNING: shift/reduce conflict for AND in state 27 resolved as shift
+WARNING: shift/reduce conflict for OR in state 27 resolved as shift

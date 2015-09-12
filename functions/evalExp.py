@@ -1,17 +1,14 @@
+# Determines the type of statement to evaluate and calls the appropriate function
+
 import readTable,sqldelete,sqlSelect,sqlUpdate
 
 #query = ['select','*','from','sales_h',',','sales_d'];
 
-def main(query,):
-	if(query[0].lower() == "select"):
+def main(query):
+	if(query[0].lower() == "select"):									#evaluates select statement
 		sqlselect.evaluate(query[1:],readTable.tb,readTable.data)
-	elif(query[0].lower() == "update"):
+	elif(query[0].lower() == "update"):									#evaluates update statement
 		sqlUpdate.update(readTable.data,query)
 	else:
-		print("delete function here")
-		sqldelete.processDelQuery(readTable.data,query)
+		sqldelete.processDelQuery(readTable.data,query)					#evaluates delete statement
 		#to check print the dictionary for sales_h
-		
-main()
-cols = readTable.getColumns("sales_h",readTable.tb)
-readTable.printTableRows(readTable.data,"sales_h",cols)

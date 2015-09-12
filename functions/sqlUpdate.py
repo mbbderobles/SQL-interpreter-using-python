@@ -1,3 +1,5 @@
+# Evaluates the update statement
+
 import sqlWhere
 
 def update(data,query):

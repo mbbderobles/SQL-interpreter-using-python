@@ -1,4 +1,4 @@
-import where
+import sqlWhere
 
 #assuming source has values
 def deleteAll(source):
@@ -46,7 +46,7 @@ def findTableSource(query):
 def processDelQuery(dataSource,query):
     if("where" in query or "WHERE" in query):
         keyList=['386-337348','386-337335']
-     # keyList=  where.processWhereStmt() # should return keys in a list
+     # keyList=  sqlWhere.processWhereStmt() # should return keys in a list
         deleteValues(dataSource[findTableSource(query)], keyList)
      # returned keys should be removed and stored back to dataSource
     else:    

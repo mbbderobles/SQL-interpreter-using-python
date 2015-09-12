@@ -1,3 +1,5 @@
+# Reads the rows of the tables from the data folder
+
 import readMeta
 
 def getRowsFromTable(tblname,columns):
@@ -38,12 +40,10 @@ def printTableRows(data,tbl,cols):
 			i = i+1
 		print()
 
-data = {}		
+data = {}									#variable for storing all rows of all tables
 tb = readMeta.tb
-cols = getColumns("sales_h",tb)
-sales_h = getRowsFromTable("sales_h",cols)
 
-for i in tb.keys():
+for i in tb.keys():							#stores all the rows of all the tables
 	cols = getColumns(i,tb)
 	rows = getRowsFromTable(i,cols)
 	data[i] = rows

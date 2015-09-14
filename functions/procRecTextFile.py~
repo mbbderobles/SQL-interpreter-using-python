@@ -20,7 +20,7 @@ def writeRecordsToTextFile(data):
 		for a in data[i].keys():
 			for b in data[i][a]
 				fRecTextFile.write(data[i][a][b])
-				fRecTextFile.write('|')#must first check if this is the last column before writing ('|').
+				fRecTextFile.write('|')
 			fRecTextFile.write('\n')
 		fRecTextFile.close()
 

@@ -17,4 +17,4 @@ def main(query):
 
 main(query)
 cols = readTable.getColumns("sales_h",readTable.tb)
-readTable.printTableRows(readTable.data,"sales_h",cols)
+#readTable.printTableRows(readTable.data,"sales_h",cols)

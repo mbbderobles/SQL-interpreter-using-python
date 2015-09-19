@@ -1,6 +1,6 @@
  # Collection of extra functions
 
-#desc statement
+# desc statement
 def descTable(tb,tbl):
 	print("==========================================================================================")
 	print("\tColumn Name\t\tType\t\tSize\t\tPrimary Key")
@@ -10,8 +10,15 @@ def descTable(tb,tbl):
 	print("==========================================================================================")
 	print()
 
-#checks if the column is a primary key of a table
+# Checks if the column is a primary key of a table
 def isPrimary(tb,tbl,col):
 	if(col == tb[tbl][0][0]):
 		return True
 	return False
+
+# Gets the index of the WHERE keyword
+def getWhereIndex(query):
+	if("where" in query):
+		return(query.index('where'))
+	else:
+		return(query.index('WHERE'))

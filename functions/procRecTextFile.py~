@@ -1,5 +1,6 @@
 import readTable
 import readMeta
+import os
 
 def getRecordsFromTextFile():
 	data = {}
@@ -11,6 +12,17 @@ def getRecordsFromTextFile():
 	
 	return data
 
+
+def writeRecordsToTextFile(data):
+	for i in data.keys():
+		vRecFile = "./data/"+i.lower()+".txt"
+		fRecTextFile = open(vRecFile,'w')
+		for a in data[i].keys():
+			for b in data[i][a]
+				fRecTextFile.write(data[i][a][b])
+				fRecTextFile.write('|')
+			fRecTextFile.write('\n')
+		fRecTextFile.close()
 
 
 records = getRecordsFromTextFile()

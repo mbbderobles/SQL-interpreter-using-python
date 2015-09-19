@@ -7,7 +7,7 @@
 def regroupList(stmt, separator):
     sublist=[]
     for i in stmt:
-        if i == separator:            
+        if(i==separator):
             yield sublist
             sublist = []
             continue
@@ -39,6 +39,6 @@ def processWhereStmt(whereStmt):
         if(whereStmt[0] == readMeta.)'''
 
 
-#sampleStmt = ["where", "cashier_id", "=", "1054", "and", "sales_gross_amount", "=", "220", "or", "customer_id", "=", "0" ]
-
+sampleStmt = ["where", "cashier_id", "=", "1054", "and", "sales_gross_amount", "=", "220", "or", "customer_id", "=", "0" ]
+#processWhereStmt(sampleStmt[1:])
 

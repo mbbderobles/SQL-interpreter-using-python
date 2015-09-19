@@ -1,4 +1,4 @@
-# Collection of extra functions
+ # Collection of extra functions
 
 #desc statement
 def descTable(tb,tbl):
@@ -10,12 +10,8 @@ def descTable(tb,tbl):
 	print("==========================================================================================")
 	print()
 
-#checks if the column is a primary key
-#return the table name if TRUE, returns false otherwise
-def isPrimary(tb,col):
-	for k in tb.keys():
-		i=0
-		if(col == tb[k][i][0]):
-			return k
-			i = i+1
-	return "false";
+#checks if the column is a primary key of a table
+def isPrimary(tb,tbl,col):
+	if(col == tb[tbl][0][0]):
+		return True
+	return False

@@ -15,12 +15,17 @@ def getRecordsFromTextFile():
 
 def writeRecordsToTextFile(data):
 	for i in data.keys():
+		cols = readTable.getColumns(i.lower(),tb)
+		vColumnCount = len(cols)
 		vRecFile = "./data/"+i.lower()+".txt"
 		fRecTextFile = open(vRecFile,'w')
 		for a in data[i].keys():
-			for b in data[i][a]
+			vCurrentColumn = 0
+			for b in data[i][a]:
+				vCurrentColumn = vCurrentColumn+1
 				fRecTextFile.write(data[i][a][b])
-				fRecTextFile.write('|')
+				if vCurrentColumn > vColumnCount:
+					fRecTextFile.write('|')#must first check if this is the last column before writing ('|').
 			fRecTextFile.write('\n')
 		fRecTextFile.close()
 

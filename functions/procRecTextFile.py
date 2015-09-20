@@ -7,8 +7,8 @@ def getRecordsFromTextFile():
 	tb = readMeta.tb
 	for i in tb.keys():
 		cols = readTable.getColumns(i.lower(),tb)
-		vRecords = readTable.getRowsFromTable(i.lower(),cols)
-		data = readTable.addTableToHash(data,i.lower(),vRecords)
+		vRecords = readTable.getRowsFromTable(i.lower(),cols) #get the records from textfile.
+		data = readTable.addTableToHash(data,i.lower(),vRecords) #place the records to hash table.
 	
 	return data
 
@@ -16,20 +16,21 @@ def getRecordsFromTextFile():
 def writeRecordsToTextFile(data):
 	for i in data.keys():
 		cols = readTable.getColumns(i.lower(),tb)
-		vColumnCount = len(cols)
+		vColumnCount = len(cols) #get the number of columns on the table.
 		vRecFile = "./data/"+i.lower()+".txt"
-		fRecTextFile = open(vRecFile,'w')
+		fRecTextFile = open(vRecFile,'w') #overwrite the existing table textfile into a new textfile.
 		for a in data[i].keys():
 			vCurrentColumn = 0
 			for b in data[i][a]:
 				vCurrentColumn = vCurrentColumn+1
-				fRecTextFile.write(data[i][a][b])
-				if vCurrentColumn > vColumnCount:
-					fRecTextFile.write('|')#must first check if this is the last column before writing ('|').
-			fRecTextFile.write('\n')
+				fRecTextFile.write(data[i][a][b]) #print the record to the textfile.
+				if vCurrentColumn > vColumnCount: #check first if it is not the last column before printing the pipe.
+					fRecTextFile.write('|')
+			fRecTextFile.write('\n') #print newline on the textfile. it means that we will print a new record row.
 		fRecTextFile.close()
 
 
+#for checking purposes only. this can be deleted
 records = getRecordsFromTextFile()
 
 for k in records.keys():
@@ -39,5 +40,5 @@ for k in records.keys():
 	for k in records[k].keys():
 		print("\t%s\t " % k, end="")
 		print()
-
+#for checking purposes only. this can be deleted
 	input('next')

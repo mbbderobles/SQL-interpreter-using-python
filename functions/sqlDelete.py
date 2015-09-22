@@ -22,7 +22,7 @@ def deleteValues(source, keyList):
 def deleteKey(source, key):
     for k in source:    
         if k == key:    
-            print("key= ", k,  ": val= "+ source[k].__str__()) 
+         #   print("key= ", k,  ": val= "+ source[k].__str__()) 
             del source[k]
             return 1
     return 0
@@ -42,13 +42,16 @@ def findTableSource(query):
    
     return query[nextInd] # returns the table name
 
-    
+#calls appropriate delete function whether deleteAll or delete according to where statement    
 def processDelQuery(dataSource,query):
-    if("where" in query or "WHERE" in query):
-        keyList=['386-337348','386-337335']
-     # keyList=  sqlWhere.processWhereStmt() # should return keys in a list
-        deleteValues(dataSource[findTableSource(query)], keyList)
+ 
+    if("where" in query or "WHERE" in query): 
+        wherelist= list(sqlWhere.regroupList(query, "where"))[1]       
+        tableSrc = findTableSource(query)        
+        keyList= sqlWhere.processWhereStmt(dataSource[tableSrc], wherelist)
+     #   print(keyList)
+        deleteValues(dataSource[tableSrc], keyList)
      # returned keys should be removed and stored back to dataSource
-    else:    
+    else: # else no where clause in delete   
         deleteAll(dataSource[findTableSource(query)])
            

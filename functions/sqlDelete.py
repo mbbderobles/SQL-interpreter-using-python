@@ -2,7 +2,7 @@ import sqlWhere
 
 #assuming source has values
 def deleteAll(source):
-    sourceLen = len(source) + 1
+    sourceLen = len(source) 
     source.clear()
     print("Successfully deleted "+ sourceLen.__str__() + " rows." )
     
@@ -11,8 +11,10 @@ def deleteAll(source):
 def deleteValues(source, keyList):
     cntr =0
     for j in keyList:
-        cntr+= deleteKey(source, j)      
+        cntr+= deleteKey(source, j)   
+          
     if cntr > 0:   
+     #   cntr+=1 # compensate for the start at index =0
         print("Deleted " , cntr , " rows successfully.")
     else:
         print("No rows were deleted.")
@@ -43,12 +45,12 @@ def findTableSource(query):
     return query[nextInd] # returns the table name
 
 #calls appropriate delete function whether deleteAll or delete according to where statement    
-def processDelQuery(dataSource,query):
+def processDelQuery(metaTb, dataSource,query):
  
     if("where" in query or "WHERE" in query): 
         wherelist= list(sqlWhere.regroupList(query, "where"))[1]       
         tableSrc = findTableSource(query)        
-        keyList= sqlWhere.processWhereStmt(dataSource[tableSrc], wherelist)
+        keyList= sqlWhere.processWhereStmt(metaTb, tableSrc, dataSource[tableSrc], wherelist)
      #   print(keyList)
         deleteValues(dataSource[tableSrc], keyList)
      # returned keys should be removed and stored back to dataSource

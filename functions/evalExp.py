@@ -2,7 +2,7 @@
 
 import readTable,sqlDelete,sqlSelect,sqlUpdate,sqlUtils,time
 
-query = ['update','sales_h','set','sales_gross_amount','=','12345','WHERE','or_no','=','386-337348']
+query = ['update','sales_h','set','sales_gross_amount','=','12345',',','customer_id','=','9999','WHERE','cashier_id','=','2251','or','cashier_id','=','1111','and','register_date','=','7/16/2015']
 
 def main(query):
 	if(query[0].lower() == "select"):									#evaluates select statement
@@ -17,6 +17,7 @@ def main(query):
 
 start_time = time.time()
 main(query)
-print("--- %s seconds ---" % round(time.time() - start_time, 4))
+qTime = round(time.time() - start_time, 4)
 cols = readTable.getColumns("sales_h",readTable.tb)
-#readTable.printTableRows(readTable.data,"sales_h",cols)
+readTable.printTableRows(readTable.data,"sales_h",cols)
+print("--- %s seconds ---" % qTime)

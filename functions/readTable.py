@@ -40,10 +40,10 @@ def printTableRows(data,tbl,cols):
 			i = i+1
 		print()
 
-data = {}									#variable for storing all rows of all tables
+data = {}									# Variable for storing all rows of all tables
 tb = readMeta.tb
 
-for i in tb.keys():							#stores all the rows of all the tables
+for i in tb.keys():							# Stores all the rows of all the tables
 	cols = getColumns(i,tb)
 	rows = getRowsFromTable(i,cols)
 	data[i] = rows

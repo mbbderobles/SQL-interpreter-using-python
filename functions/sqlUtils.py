@@ -22,3 +22,21 @@ def getWhereIndex(query):
 		return(query.index('where'))
 	else:
 		return(query.index('WHERE'))
+
+# Get primary keys based on the evaluation of conditions
+# squery - list containing the conditions in the where clause (WHERE [condition])
+def getKeysFromCond(data,tbl,squery):
+	pk = []												# Lists all pks that makes the condition true
+	for j in data[tbl].keys():
+		i=0
+		while(i < len(squery)):							# Evaluates all conditions after WHERE clause
+			if(data[tbl][j][squery[i]] == squery[i+2]):
+				if(i==0):
+					pk.append(j)
+				elif(i>0 and squery[i-1].lower()=="or" and j not in pk):
+					pk.append(j)
+			else:
+				if(i>0 and squery[i-1].lower()=="and" and j in pk):
+					pk.remove(j)
+			i+=4
+	print(pk)

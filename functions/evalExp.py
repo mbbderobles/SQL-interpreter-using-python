@@ -2,7 +2,7 @@
 
 import readTable,sqlDelete,sqlSelect,sqlUpdate,sqlUtils,time
 
-query = ['update','sales_h','set','sales_gross_amount','=','12345',',','customer_id','=','9999','WHERE','cashier_id','=','2251','or','cashier_id','=','1111','and','register_date','=','7/16/2015']
+query = ['update','sales_h','set','sales_gross_amount','=','12345',',','customer_id','=','9999',',','or_no','=','386-337380','WHERE','sales_gross_amount','>','200','and','register_date','=','7/16/2015','or','or_no','=','386-337380']
 #query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'or','customer_id', '=', '0', 'or','or_no','>','386-337338','or','sales_gross_amount','>','50']
 
 def main(query):

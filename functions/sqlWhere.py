@@ -19,10 +19,10 @@ def regroupList(stmt, separator):
 #returns the column type of a given column- using data from readMeta.tb
 #if type is int or float, considered as int, all the rest are considered as str
 def determineColType(metaTB, tableName, columnName):
-    
+    datatype = ""
     for i in metaTB[tableName]:
         if(metaTB[tableName][i][0]==columnName):
-            datatype= metaTB[tableName][i][1]
+            datatype = metaTB[tableName][i][1]
          #   print(datatype)
             break
     

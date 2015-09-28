@@ -23,14 +23,6 @@ def getWhereIndex(query):
 	else:
 		return(query.index('WHERE'))
 
-# Returns true if value of the primary key already exists
-def isPrimaryValue(tbl,data,val):
-	for j in data[tbl].keys():
-		if(val == j):
-			return True
-	return False
-
-
 # Returns a list of primary keys based on the evaluation of conditions
 # squery - list containing the conditions in the where clause (WHERE [condition])
 def getKeysFromCond(data,tb,tbl,squery):

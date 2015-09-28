@@ -386,9 +386,21 @@ def addFilterTwoVar(temp1,temp2,var1tbl,var2tbl,tables,result,rCopy):
 	in1 = tables.index(var1tbl)
 	in2 = tables.index(var2tbl)
 	
-	j=0
-	while
-	
+	i = 0
+	while(i<len(temp1) and i<len(temp2)):
+		j = 0
+		while(j<len(result)):
+			if(result[j][in1]==temp1[i] and result[j][in2]==temp2[i]):
+				flag = True
+				break
+			j+=1
+		if(not flag):
+			k=0
+			while(k<len(rCopy)):
+				if(rCopy[k][in1]==temp1[i] and rCopy[k][in2]==temp2[i]):
+					result.append(rCopy[k])
+				k+=1
+		j+=1
 
 
 ''' removes the rows that did not satisfy the query '''
@@ -492,10 +504,7 @@ def joinWithOn(tokens):
 			if(cond=='and' or cond=='on'):
 				result = filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result)
 			elif(cond=='or'):
-				result = addFilterTwoVar(temp1,temp2,var1[0],var2[0],tables,result,rCopy)#!!!!!!!!!!
-			#this is only for two tables
-			#temp1,temp2 = evaluateJoinWithOn(var1,sign,var2,cols)
-			#result = mergeTwo(tables,cols,var1[0],var2[0],temp1,temp2)
+				result = addFilterTwoVar(temp1,temp2,var1[0],var2[0],tables,result,rCopy)
 		elif(len(var1)>1):
 			print('right side single')
 			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)

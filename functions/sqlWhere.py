@@ -39,7 +39,7 @@ def convertValue(dataType, data):
     if(dataType =="str"):
         temp = data.__str__()
     elif(dataType == "int"):
-        temp = int(data)
+        temp = int(float(data))
     elif(dataType == "float"):
         temp = float(data)
       

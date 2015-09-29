@@ -8,7 +8,8 @@ import sqlUtils,sqlWhere
 # query - contains the update query
 def update(data,tb,query):
 	tbl = query[1]											# Stores the table name to tbl
-	#query = query[3:]										# Remove other elements in the list
+	query = query[3:]
+	cnt = 0										# Remove other elements in the list
 	if("where" in query or "WHERE" in query):				# Checks if query contains the WHERE clause
 		wIndex = sqlUtils.getWhereIndex(query)				# Gets the index of the WHERE keyword
 		pk = sqlWhere.processWhereStmt(tb, tbl, data[tbl], query[wIndex+1:])	# Gets list of rows to be updated
@@ -18,7 +19,11 @@ def update(data,tb,query):
 		print(str(isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk)))
 	else:													# No WHERE clause
 		if(not isDuplicateEntry(data,tb,tbl,query,[],[])):
-			updateAllRows(data,tbl,query)
+			cnt = updateAllRows(data,tbl,query)
+			sqlUtils.printUpdate(cnt)
+
+	return cnt
+
 
 # Updates all rows
 # data - stores the table data
@@ -26,10 +31,13 @@ def update(data,tb,query):
 # query - contains the update query
 def updateAllRows(data,tbl,query):
 	i=0
+	cnt=0
 	while(i < len(query)):
 		for j in data[tbl].keys():
 			data[tbl][j][query[i]] = query[i+2]
+		cnt+=1
 		i+=4
+	return cnt
 
 # Updates some rows filtered by the WHERE clause
 # data - stores the table data
@@ -39,11 +47,14 @@ def updateAllRows(data,tbl,query):
 # pk - stores the list of rows to be updated
 def updateRows(data,tbl,query,pk,wIndex):
 	j=0
+	temp = []
 	while(j < len(pk)):
 		i=0
 		while(i < wIndex):
 			if(sqlUtils.isPrimary(tb,tbl,query[i])):
-				print("????")
+				temp = data[tbl][pk[j]]
+				del data[tbl][pk[j]]
+				data[tbl][query[i+2]] = temp
 			else:
 				data[tbl][pk[j]][query[i]] = query[i+2]
 			i+=4

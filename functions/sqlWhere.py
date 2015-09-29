@@ -202,7 +202,7 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
                     orlist = getKeysStmtEval(metadataTb, tableName, tableSource,regroupedList[cnt]) 
               
                 #print(orlist)
-                keyList= orlist  
+                keyList= mergeKeysUnion(finalList,orlist) 
            
     
         

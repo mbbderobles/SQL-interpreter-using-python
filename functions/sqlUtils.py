@@ -79,3 +79,9 @@ def getType(tb,tbl,col):
 		if(col == tb[tbl][i][0]):
 			return tb[tbl][i][1]
 		i+=1
+
+def printUpdate(cnt):
+	if(cnt > 1):
+		print("Query OK, %d rows affected" % cnt)
+	else:
+		print("Query OK, %d row affected" % cnt)

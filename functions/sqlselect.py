@@ -260,7 +260,7 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 	else:
 		return [],[]
 
-def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result):
+def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 	comp,t1,t2 = typeCompatible(var1,var2)
 	if(comp): #if compatible
 		data1 = []
@@ -317,6 +317,69 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result):
 						data1.append(j)
 				else:	#if both are not PK
 					if(data[var1[0]][j][var1[2]]!=var2[0]):
+						data1.append(j)
+		
+		return data1 #PKs of 1st table, 2nd table
+	else:
+		return []
+
+def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
+	comp,t1,t2 = typeCompatible(var1,var2)
+	if(comp): #if compatible
+		data1 = []
+		#if equality
+		if(sign=='='):
+			var2PK = isPK(var2[0],var2[2])
+			
+			# ++ GETTING THE PK's of the matching data
+			for j in data[var2[0]].keys():
+				if(var2PK):	#if first is PK
+					if(j==var1[0]):
+						data1.append(j)
+				else:	#if both are not PK
+					if(data[var2[0]][j][var2[2]]==var1[0]):
+						data1.append(j)
+		elif(sign=='<'):
+			print('less than')
+			if(t1!='string'):
+				var2PK = isPK(var2[0],var2[2])
+			
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var2[0]].keys():
+					if(var2PK):	#if first is PK
+						if(float(var1[0])<float(j)):
+							data1.append(j)
+					else:	#if both are not PK
+						if(float(var1[0])<float(data[var2[0]][j][var2[2]])):
+							data1.append(j)
+			else:
+				print('< cannot be used on type string')
+		elif(sign=='>'):
+			print('greater than')
+			if(t1!='string'):
+				var2PK = isPK(var2[0],var2[2])
+				
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var2[0]].keys():
+					if(var2PK):	#if first is PK
+						if(float(var1[0])>float(j)):
+							data1.append(j)
+					else:	#if both are not PK
+						if(float(var1[0])>float(data[var2[0]][j][var2[2]])):
+							data1.append(j)
+			else:
+				print('< cannot be used on type string')
+		elif(sign=='!='):
+			print('not equal')
+			var2PK = isPK(var2[0],var2[2])
+			
+			# ++ GETTING THE PK's of the matching data
+			for j in data[var2[0]].keys():
+				if(var2PK):	#if first is PK
+					if(j!=var1[0]):
+						data1.append(j)
+				else:	#if both are not PK
+					if(data[var2[0]][j][var2[2]]!=var1[0]):
 						data1.append(j)
 		
 		return data1 #PKs of 1st table, 2nd table
@@ -381,28 +444,6 @@ def filterTwoVar(temp1,temp2,var1tbl,var2tbl,tables,result):
 #		print(i)
 	return result
 
-'''adds the result of the or '''
-def addFilterTwoVar(temp1,temp2,var1tbl,var2tbl,tables,result,rCopy):
-	in1 = tables.index(var1tbl)
-	in2 = tables.index(var2tbl)
-	
-	i = 0
-	while(i<len(temp1) and i<len(temp2)):
-		j = 0
-		while(j<len(result)):
-			if(result[j][in1]==temp1[i] and result[j][in2]==temp2[i]):
-				flag = True
-				break
-			j+=1
-		if(not flag):
-			k=0
-			while(k<len(rCopy)):
-				if(rCopy[k][in1]==temp1[i] and rCopy[k][in2]==temp2[i]):
-					result.append(rCopy[k])
-				k+=1
-		j+=1
-
-
 ''' removes the rows that did not satisfy the query '''
 def filterOneVar(temp1,var1tbl,tables,result):
 	in1 = tables.index(var1tbl)
@@ -450,7 +491,60 @@ def getColsFromKeys(cols,result,tables):
 			return False
 
 	return printData
+
+def intersect(left,right):
+	data = []
 	
+	i=0
+	if(len(left)<len(right)):
+		while(i<len(left)):
+			if(left[i] in right):
+				data.append(left[i])
+			i+=1
+	else:
+		while(i<len(right)):
+			if(right[i] in left):
+				data.append(right[i])
+			i+=1
+			
+	return data
+
+def union(left,right):
+	data = []
+	
+	i=0
+	while(i<len(left)):
+		if(left[i] not in data):
+			data.append(left[i])
+		i+=1
+	i=0
+	while(i<len(right)):
+		if(right[i] not in data):
+			data.append(right[i])
+		i+=1
+
+	return data
+
+def evalAndOr(temp):
+	while('and' in temp):
+		ind = temp.index('and')
+		left = temp[ind-1]
+		right = temp[ind+1]
+		temp[ind] = intersect(left,right)
+#		print(len(temp[ind]))
+		temp.pop(ind+1)
+		temp.pop(ind-1)
+	
+	while('or' in temp):
+		ind = temp.index('or')
+		left = temp[ind-1]
+		right = temp[ind+1]
+		temp[ind] = union(left,right)
+#		print(len(temp[ind]))
+		temp.pop(ind+1)
+		temp.pop(ind-1)		
+		
+	return temp
 # + END OF UTILITY FUNCTIONS +++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ''' START OF QUERY FUNCTIONS HERE '''
@@ -460,25 +554,23 @@ def joinWithOn(tokens):
 	cols,tokens = getColsToPrint(tokens,True);
 	tables,tokens = getJoinTables(tokens)
 	result = joinTables(tables)
-	rCopy = result.copy()
 	
-	cond = 'and'
-	nextCond = ''
-	print(tokens)
+	temp = []
 	while(len(tokens)!=0):
-		print()
+#		print(tokens)
 		tokens = tokens[1:]
-		signIndex = 0
+		signIndex = -1
 		if('<' in tokens):
 			signIndex = tokens.index('<')
-		elif('>' in tokens):
-			signIndex = tokens.index('>')
-		elif('=' in tokens):
-			signIndex = tokens.index('=')
-		elif('!=' in tokens):
-			signIndex = tokens.index('!=')
-		else:
-			signIndex = None
+		if('>' in tokens):
+			if(signIndex>tokens.index('>') or signIndex==-1):
+				signIndex = tokens.index('>')
+		if('=' in tokens):
+			if(signIndex>tokens.index('=') or signIndex==-1):
+				signIndex = tokens.index('=')
+		if('!=' in tokens):
+			if(signIndex>tokens.index('!=') or signIndex==-1):
+				signIndex = tokens.index('!=')
 
 		sign = tokens[signIndex]
 		var1 = tokens[0:signIndex]
@@ -489,33 +581,35 @@ def joinWithOn(tokens):
 			tokens = var2[nearest:]
 			var2 = var2[:nearest]
 			nextCond = tokens[0]
-			print(nextCond)
 		#elif and in var2 and or in var2
 		else:
 			tokens = []
-		
-		print('var1',var1)
-		print('var2',var2)
-		print('toks',tokens)
+
+#		print('var1',var1)
+#		print('var2',var2)
+#		print('toks',tokens)
+#		break
 
 		if(len(var1)>1 and len(var2)>1):
 			print('both side')
 			temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
-			if(cond=='and' or cond=='on'):
-				result = filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result)
-			elif(cond=='or'):
-				result = addFilterTwoVar(temp1,temp2,var1[0],var2[0],tables,result,rCopy)
+			temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
 		elif(len(var1)>1):
 			print('right side single')
 			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-			result = filterOneVar(temp1,var1[0],tables,result)
+			temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
 		elif(len(var2)>1):
 			print('left side single')
+			temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
+			temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
 		else:
 			print('both side single')
 		cond = nextCond
+		if(len(tokens)!=0):
+			temp.append(cond)
 	
-	result = getColsFromKeys(cols,result,tables)
+	temp = evalAndOr(temp)
+	result = getColsFromKeys(cols,temp[0],tables)
 	
 	if(result):
 		print(tabulate(result,headers=cols,tablefmt="psql"))

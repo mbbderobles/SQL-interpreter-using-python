@@ -1,4 +1,5 @@
-import sqlWhere
+
+import sqlWhere, sqlUtils
 
 #assuming source has values
 def deleteAll(source):
@@ -30,7 +31,7 @@ def deleteKey(source, key):
     return 0
             
             
-
+#utility 
 def findTableSource(query):
     nextInd = -1
     
@@ -48,7 +49,9 @@ def findTableSource(query):
 def processDelQuery(metaTb, dataSource,query):
  
     if("where" in query or "WHERE" in query): 
-        wherelist= list(sqlWhere.regroupList(query, "where"))[1]       
+        
+        indexWhere= sqlUtils.getWhereIndex(query)        
+        wherelist= query[indexWhere+1:]  
         tableSrc = findTableSource(query)        
         keyList= sqlWhere.processWhereStmt(metaTb, tableSrc, dataSource[tableSrc], wherelist)
      #   print(keyList)

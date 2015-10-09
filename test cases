@@ -22,3 +22,16 @@ query = ['update','sales_h','set','sales_gross_amount','=','12345',',','or_no','
 
 DELETE
 query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'or','customer_id', '=', '0', 'or','or_no','>','386-337338','or','sales_gross_amount','>','50']
+
+
+#OR - OR
+query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'or','customer_id', '=', '0', 'or','or_no','>','386-337386']
+#AND - AND
+query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'and','customer_id', '=', '0', 'and','or_no','>','386-337341']
+#AND - OR - AND
+query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'and','customer_id', '=', '0', 'or','or_no','>','386-337338','and','sales_gross_amount','<','50']
+#AND- AND - OR
+query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622', 'or','customer_id', '=', '0', 'and','or_no','>','386-337338','and','sales_gross_amount','<','50']
+# NONE
+query = ['delete', 'from', 'sales_h', 'where','cashier_id', '=', '622']
+

@@ -44,7 +44,7 @@ def p_select_statement(p):
 	
 	'''select_statement : select_option from_statement
 	| select_option from_statement where_statement expression
-	| select_option from_statement join_statement expression2'''
+	| select_option from_statement join_option'''
 
 			
 def p_select_option(p):
@@ -63,14 +63,21 @@ def p_from_statement(p):
 	
 	tbl.append(p[2])
 	
+def p_join_option(p):
+	'''join_option : join_statement ON expression2
+	| join_statement ON expression2 join_option
+	| join_statement join_option
+	| join_statement'''
+	
+	if(len(p) == 5 or len(p) == 4):
+		strings.insert(len(strings)-3,p[2])
 	
 
 def p_join_statement(p):
-	'''join_statement : JOIN IDENTIFIER ON'''
+	'''join_statement : JOIN IDENTIFIER'''
 	
 	strings.append(p[1])
-	strings.append(p[2])
-	strings.append(p[3])	
+	strings.append(p[2])	
 	tbl.append(p[2])
 
 
@@ -103,8 +110,6 @@ def p_expression2(p):
 	flagp1 = 0
 	flagp3 = 0
 	
-	print(cols)
-	print("EXPRESSION 2")
 	while(count < coLen):
 		if(p[1] == cols[count]):
 			flagp1 = 1
@@ -192,6 +197,8 @@ def p_update_statement(p):
 	
 def p_columns2(p):
 	'''columns2 : IDENTIFIER EQUAL NUMBER COMMA columns2
+	| IDENTIFIER EQUAL STRING COMMA columns2
+	| IDENTIFIER EQUAL STRING
 	| IDENTIFIER EQUAL NUMBER''' 
 
 	if (len(p) == 6) :
@@ -227,5 +234,6 @@ def parse(query):
 	global strings
 	strings = []
 	myparser.parse(query)
+	print(strings)
 	return strings
 

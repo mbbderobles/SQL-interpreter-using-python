@@ -39,7 +39,7 @@ t_UPDATE = r'UPDATE|update';
 t_DELETE = r'DELETE|delete';
 t_DESC = r'DESC|desc';
 t_FROM = r'FROM|from'
-t_STRING = r'".*"|\'.*\''
+t_STRING = r'\".*"|\'.*\''
 
 def t_NUMBER(t):
 	r'\d+'

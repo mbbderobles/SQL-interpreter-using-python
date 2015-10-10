@@ -32,7 +32,7 @@ tokens = (
 	'DESC'
 )
 
-# Regular expression for each token ########
+# Regular expression for each token #########
 
 t_SELECT = r'SELECT|select'
 t_UPDATE = r'UPDATE|update';

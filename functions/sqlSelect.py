@@ -1,4 +1,3 @@
-from tabulate import tabulate
 
 tb = {}
 data = {}
@@ -85,6 +84,47 @@ def getTableOfCol(col):
 		for colIndex in tb[tblName].keys():
 			if(tb[tblName][colIndex][0]==col):
 				return tblName
+
+def getSize(i):
+	tbl = getTableOfCol(i)
+	for j in range(0,len(tb[tbl].keys())):
+		if(tb[tbl][j][1]=="date"):
+			return 15
+		if(tb[tbl][j][0]==i):
+			return int(tb[tbl][j][2])
+
+def tabulate(printData,headers):
+	sizes = []
+	size = 0
+	for i in headers:
+		x = getSize(i)
+		sizes.append(x)
+		size += x
+
+	print(size)
+
+	size += (3*len(sizes))+3
+	pluss = '+'*size
+
+	print(pluss)
+
+	count = 0
+	print(headers)
+	print(sizes)
+	for i in headers:
+		print("|  {}".format(str(i).ljust(sizes[count])), end="")
+		count += 1
+	print('  |')
+
+	print(pluss)
+
+	for i in printData:
+		count = 0
+		for j in i:
+			print("|  {}".format(str(j).ljust(sizes[count])), end="")
+			count+=1
+		print('  |')
+	print(pluss)
 
 # +++ TYPE FUNCTIONS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ''' gets the type of a variable or constant '''
@@ -832,8 +872,8 @@ def normalSelect(tokens):
 				temp.append(data[tables][i][col])
 		printData.append(temp)
 	print()
-	print(tabulate(printData,headers=cols,tablefmt="psql"))
-	print("   ",counter," row(s) returned.\n")
+	tabulate(printData,cols)
+	print("   ",counter," row(s) returned.",end="")
 
 
 # ++++ MAIN FUNCTION +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -871,7 +911,7 @@ def evaluate(tokens,tables,rows):
 
 		print()
 		if(len(result)==0):
-			print("   No rows returned\n");
+			print("   No rows returned",end="");
 		else:
 			for i in cols:
 				print(" {}".format(i.ljust(30)),end="")
@@ -881,7 +921,7 @@ def evaluate(tokens,tables,rows):
 					print(" {}".format(i[k].ljust(30)),end="")
 				print()
 	#		print(tabulate(printData,headers=cols,tablefmt="psql"))
-			print("   ",len(result)," row(s) returned.\n");
+			print("   ",len(result)," row(s) returned.",end="");
 
 	elif 'where' in tokens or 'WHERE' in tokens: #where only
 		print('function with where here')
@@ -896,14 +936,14 @@ def evaluate(tokens,tables,rows):
 			if(result):
 				if(len(result)<1000):
 					print(tabulate(result,headers=cols,tablefmt="psql"))
-				print("   ",len(result)," row(s) returned.\n")
+				print("   ",len(result)," row(s) returned.",end="")
 			elif(type(result)!=bool and len(result)==0):
-				print("   ",len(result)," row(s) returned.\n")
+				print("   ",len(result)," row(s) returned.",end="")
 		else:
 			result,cols = joinWithoutOn(tokens)
 			print()
 			if(len(result)==0):
-				print("   No rows returned\n");
+				print("   No rows returned",end="");
 			else:
 				for i in cols:
 					print(" {}".format(i.ljust(30)),end="")
@@ -913,7 +953,7 @@ def evaluate(tokens,tables,rows):
 						print(" {}".format(i[k].ljust(30)),end="")
 					print()
 		#		print(tabulate(printData,headers=cols,tablefmt="psql"))
-				print("   ",len(result)," row(s) returned.\n");
+				print("   ",len(result)," row(s) returned.",end="");
 	else: #normal select statement
 		index = tokens.index('from');
 		if isCrossProduct(index,len(tokens)):

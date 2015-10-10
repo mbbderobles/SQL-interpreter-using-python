@@ -13,12 +13,10 @@ def update(data,tb,query):
 	if("where" in query or "WHERE" in query):				# Checks if query contains the WHERE clause
 		wIndex = sqlUtils.getWhereIndex(query)				# Gets the index of the WHERE keyword
 		pk = sqlWhere.processWhereStmt(tb, tbl, data[tbl], query[wIndex+1:])	# Gets list of rows to be updated
-		'''if(not isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk)):
-			updateRows(data,tbl,query,pk,wIndex)'''
-		print(pk)
-		print(str(isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk)))
+		if(not isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk) and pk):
+			updateRows(data,tb,tbl,query,pk,wIndex)
 	else:													# No WHERE clause
-		if(not isDuplicateEntry(data,tb,tbl,query,[],[])):
+		if(not isDuplicateEntry(data,tb,tbl,query,[],[]) and pk):
 			cnt = updateAllRows(data,tbl,query)
 			sqlUtils.printUpdate(cnt)
 
@@ -45,7 +43,7 @@ def updateAllRows(data,tbl,query):
 # tbl - stores the table name
 # query - contains the update query with 
 # pk - stores the list of rows to be updated
-def updateRows(data,tbl,query,pk,wIndex):
+def updateRows(data,tb,tbl,query,pk,wIndex):
 	j=0
 	temp = []
 	while(j < len(pk)):

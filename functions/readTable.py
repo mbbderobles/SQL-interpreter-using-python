@@ -12,6 +12,7 @@ def getRowsFromTable(tblname,columns):
 		data = line.split('|')
 		tblData[data[0]] = {}
 		i = 0
+		#print(data, tblname)
 		while i<len(columns):
 			if i==0:
 				i = i+1
@@ -40,10 +41,3 @@ def printTableRows(data,tbl,cols):
 			i = i+1
 		print()
 
-data = {}									# Variable for storing all rows of all tables
-tb = readMeta.tb
-
-for i in tb.keys():							# Stores all the rows of all the tables
-	cols = getColumns(i,tb)
-	rows = getRowsFromTable(i,cols)
-	data[i] = rows

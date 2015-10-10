@@ -17,7 +17,7 @@ import lexer, parser, evalExp, procRecTextFile
 
 query = ''
 tokens = [] #list of tokens
-MainHashTable = procRecTextFile.getRecordsFromTextFile() #Reading from Textfile to Hashtable
+MainHashTable,metaTB = procRecTextFile.getRecordsFromTextFile() #Reading from Textfile to Hashtable
 os.system('clear')
 
 
@@ -39,7 +39,7 @@ while True:
 			tokens = parser.parse(query)
 			if len(tokens) !=0: #the query is valid
 				print("   Syntax is valid")
-				evalExp.main(tokens)
+				evalExp.main(tokens,MainHashTable,metaTB)
 			else:
 				print("   Syntax is invalid")
  		#if correct:

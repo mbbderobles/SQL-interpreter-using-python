@@ -37,7 +37,7 @@ def determineColType(metaTB, tableName, columnName):
 def convertValue(dataType, data):
     temp=data
     if(dataType =="str"):
-        temp = data.__str__()
+        temp = data[1:-1].__str__()     # strip quotation marks before converting
     elif(dataType == "int"):
         temp = int(float(data))
     elif(dataType == "float"):

@@ -9,7 +9,7 @@ import sqlUtils,sqlWhere
 def update(data,tb,query):
 	tbl = query[1]											# Stores the table name to tbl
 	query = query[3:]
-	cnt = 0										# Remove other elements in the list
+	cnt = 0													# Remove other elements in the list
 	if("where" in query or "WHERE" in query):				# Checks if query contains the WHERE clause
 		wIndex = sqlUtils.getWhereIndex(query)				# Gets the index of the WHERE keyword
 		pk = sqlWhere.processWhereStmt(tb, tbl, data[tbl], query[wIndex+1:])	# Gets list of rows to be updated

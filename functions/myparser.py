@@ -21,8 +21,9 @@ def p_program(p):
 
 def p_statement(p):
 	'''statement : SELECT select_statement
-		| UPDATE update_statement'''
-#		| DELETE delete_statement'''
+		| UPDATE update_statement
+		| DELETE delete_statement'''
+	
 	strings.insert(0,p[1])
 
 def p_columns(p):
@@ -37,7 +38,7 @@ def p_columns(p):
 		strings.append(p[1])
 	
 	cols.insert(0,p[1])
-	print(cols)
+
 
 def p_select_statement(p):
 	
@@ -66,17 +67,12 @@ def p_from_statement(p):
 
 def p_join_statement(p):
 	'''join_statement : JOIN IDENTIFIER ON'''
-
-	tables = []
-	print("here")
-	print(strings)
 	
 	strings.append(p[1])
 	strings.append(p[2])
-	strings.append(p[3])
-	
+	strings.append(p[3])	
 	tbl.append(p[2])
-	print(tbl)
+
 
 
 def p_expression2(p):
@@ -88,26 +84,19 @@ def p_expression2(p):
 	global gap
 	global strings
 	index = len(strings)-gap
-	print(index)
-	print(strings)
-	
 	
 	if(len(p) == 6):
 		strings.insert(index,p[4])
 		strings.insert(index,p[3])
 		strings.insert(index,p[2])
 		strings.insert(index,p[1])
-		print(strings)
-		print("first")
 		gap = gap + 4
 	
 	elif(len(p) == 4):
 		strings.append(p[1])
 		strings.append(p[2])
 		strings.append(p[3])
-		print(strings)
-		print("second")
-		
+
 	
 	coLen = len(cols)
 	count = 0
@@ -164,9 +153,7 @@ def p_expression(p):
 		strings.insert(index,p[3])
 		strings.insert(index,p[2])
 		strings.insert(index,p[1])
-		print(strings)
-		print("first")
-		print(gap)
+
 		gap = gap + 4		
 
 		
@@ -174,16 +161,11 @@ def p_expression(p):
 		strings.append(p[1])
 		strings.append(p[2])
 		strings.append(p[3])
-		print(strings)
-		print("second")
-		print(gap)
 		
 	coLen = len(cols)
 	count = 0
 	flagp1 = 0
 	
-	print(cols)
-	print("EXPRESSION 1")
 	while(count < coLen):
 		if(p[1] == cols[count]):
 			flagp1 = 1
@@ -223,13 +205,19 @@ def p_columns2(p):
 		strings.insert(0,p[2])
 		strings.insert(0,p[1])
 
-
+def p_delete_statement(p):
+	'''delete_statement : from_statement
+	| from_statement where_statement expression'''
+	
 
 def p_error(p):
 	if p:
 		print("   Syntax error at", p.value)
 	else:
 		print("   Syntax error at EOF")
+		
+
+	
 
 
 myparser = yacc.yacc()

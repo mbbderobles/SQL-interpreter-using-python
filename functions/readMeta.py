@@ -1,7 +1,7 @@
 # Reads the metadata file from the data folder
 
 def readMetaData():
-	fReader = open("./data/metadata","r")
+	fReader = open("./data/metadata","r",encoding = "UTF-8")
 	counter = 0
 	tables = {}								#list of tables from the metadata
 	tbl = ''								#temp var for the name of the tables

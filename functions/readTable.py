@@ -3,7 +3,7 @@
 import readMeta
 
 def getRowsFromTable(tblname,columns):
-	fReader = open('./data/'+tblname+'.txt','r')
+	fReader = open('./data/'+tblname+'.txt','r',encoding = "UTF-8")
 	tblData = {}
 	count = 0
 	for line in fReader:

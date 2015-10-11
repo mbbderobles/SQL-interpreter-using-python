@@ -157,6 +157,7 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
         finalList=[]
         orlist =[]
         for cnt in range (0, len(regroupedList)): #first level lists contains OR clauses
+            #print("round" + cnt.__str__())
             if("AND" in regroupedList[cnt] or "and" in regroupedList[cnt]):
                 regroupedList2.append(list( regroupList(regroupedList[cnt], "and"))) #second level contains AND clauses
                # print(regroupedList2)
@@ -202,8 +203,12 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
                     orlist = getKeysStmtEval(metadataTb, tableName, tableSource,regroupedList[cnt]) 
               
                 #print(orlist)
-                keyList= mergeKeysUnion(finalList,orlist) 
-           
+                
+            if len(finalList) == 0:
+                    keyList = orlist
+            else:  
+                 tempp = keyList               
+                 keyList= mergeKeysUnion(tempp,orlist) 
     
         
     #only 'and' exists in whereStmt
@@ -229,14 +234,3 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
     #print(keyList)    
     return keyList
         
-#OR - OR
-#sampleStmt = ['cashier_id', '=', '622', 'or','customer_id', '=', '0', 'or','or_no','>','386-337386']
-#AND - AND
-#sampleStmt = ['cashier_id', '=', '622', 'and','customer_id', '=', '0', 'and','or_no','>','386-337341']
-#AND - OR - AND
-#sampleStmt = ['cashier_id', '=', '622', 'and','customer_id', '=', '0', 'or','or_no','>','386-337338','and','sales_gross_amount','<','50']
-#AND- AND - OR
-#sampleStmt = ['cashier_id', '=', '622', 'or','customer_id', '=', '0', 'and','or_no','>','386-337338','and','sales_gross_amount','<','50']
-# NONE
-#sampleStmt = ['cashier_id', '=', '622']
-#processWhereStmt(readMeta.tb, 'sales_h', readTable.data['sales_h'],sampleStmt )

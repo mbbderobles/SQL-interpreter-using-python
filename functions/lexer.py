@@ -87,7 +87,7 @@ def check(query):
 	lexer.input(query)
 	while True:
 		tok = lexer.token()
-		print(tok)
+		#print(tok)
 		if not tok:
 			break
 #		print(tok)

@@ -148,12 +148,16 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
     regroupedList = []
     regroupedList2=[]
     
+    newlist =[]
+    for w in range(0, len(whereStmt)):
+        newlist.append((whereStmt[w].__str__()).replace('\'', ''))   
+    whereStmt= newlist
+    #print(newlist)
     # 'or' exists in whereStmt
     if("OR" in whereStmt or "or" in whereStmt):
         regroupedList =  list( regroupList(whereStmt, "or"))
         #print(regroupedList)
-        
-        
+                
         finalList=[]
         orlist =[]
         for cnt in range (0, len(regroupedList)): #first level lists contains OR clauses

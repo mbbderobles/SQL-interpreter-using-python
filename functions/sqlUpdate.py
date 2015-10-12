@@ -10,7 +10,6 @@ def update(data,tb,query):
 	tbl = query[1]											# Stores the table name to tbl
 	query = query[3:]
 	cnt = 0													# Remove other elements in the list
-	query = query[3:]										# Remove other elements in the list
 	pk = []
 	if("where" in query or "WHERE" in query):				# Checks if query contains the WHERE clause
 		wIndex = sqlUtils.getWhereIndex(query)				# Gets the index of the WHERE keyword
@@ -18,14 +17,16 @@ def update(data,tb,query):
 		if(not isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk) and pk):
 			updateRows(data,tb,tbl,query,pk,wIndex)
 			print("   ",len(pk)," row(s) affected.",end="");
+		elif(not pk):
+			print("   No row(s) affected.",end="");
 		else:
-			print("ERROR: Duplicate entry for PRIMARY KEY. ",end="");
+			print("   ERROR: Duplicate entry for PRIMARY KEY. ",end="");
 	else:													# No WHERE clause
-		if(not isDuplicateEntry(data,tb,tbl,query,[],[]) and pk):
+		if(not isDuplicateEntry(data,tb,tbl,query,[],[])):
 			cnt = updateAllRows(data,tbl,query)
-			print("   ",len(pk)," row(s) affected.",end="");
+			print("   ",cnt," row(s) affected.",end="");
 		else:
-			print("ERROR: Duplicate entry for PRIMARY KEY. ",end="");
+			print("   ERROR: Duplicate entry for PRIMARY KEY. ",end="");
 
 
 # Updates all rows
@@ -38,8 +39,10 @@ def updateAllRows(data,tbl,query):
 	while(i < len(query)):
 		for j in data[tbl].keys():
 			data[tbl][j][query[i]] = query[i+2]
-		cnt+=1
+			if(i==0):
+				cnt+=1
 		i+=4
+	return cnt
 
 # Updates some rows filtered by the WHERE clause
 # data - stores the table data
@@ -66,8 +69,8 @@ def updateRows(data,tb,tbl,query,pk,wIndex):
 # Returns true if there is a duplicate entry in the primary key, false otherwise
 def isDuplicateEntry(data,tb,tbl,changeList,whereList,pk):
 	primaryKey = tb[tbl][0][0]			# Gets the primary key of the table
-	
-	if(primaryKey not in changeList):	# Checks if primary key is not part of the to be update columns
+
+	if(primaryKey not in changeList):	# Checks if primary key is not part of the to be updated columns
 		return False
 	elif(primaryKey in changeList and not whereList):	# Checks if primary key is part of the to be update columns and there's no WHERE clause
 		return True

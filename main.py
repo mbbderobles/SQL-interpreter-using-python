@@ -40,7 +40,6 @@ while True:
 			#print('PARSER tokens',tokens)
 			if len(tokens) !=0: #the query is valid
 				#print("   Syntax is valid")
-				#print(tokens)
 				if(not('select' in tokens) and not('SELECT' in tokens)):
 					error = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
 					if(error == False):
@@ -49,7 +48,6 @@ while True:
 						print("   ERROR: Invalid table/column near", error)
 				else:
 					tokens = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
-					#print('UPDATED tokens',tokens)
 					evalExp.main(tokens,MainHashTable,metaTB)
 			else:
 				print("   Syntax is invalid")

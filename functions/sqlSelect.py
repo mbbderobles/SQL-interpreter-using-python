@@ -526,7 +526,7 @@ def getColsFromKeys(cols,result,tables):
 	for col in cols:
 		counter=0;
 		tbl = getTableOfCol(col)
-		if(tbl in tables):
+		if(tbl):
 			ind = tables.index(tbl)
 			for k in result:
 				if(col==getTablePK(tbl)):

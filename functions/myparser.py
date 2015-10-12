@@ -27,7 +27,8 @@ def p_program(p):
 def p_statement(p):
 	'''statement : SELECT select_statement
 		| UPDATE update_statement
-		| DELETE delete_statement'''
+		| DELETE delete_statement
+		| DESC desc_statement'''
 	
 	strings.insert(0,p[1])
 
@@ -61,6 +62,11 @@ def p_columns2(p):
 		strings.insert(0,p[2])
 		strings.insert(0,p[1])
 
+def p_desc_statement(p):
+	'''desc_statement : IDENTIFIER'''
+	
+	strings.insert(0,p[1])
+	
 
 def p_select_statement(p):
 	
@@ -296,5 +302,5 @@ def parse(query):
 	counter2 = 0
 	gapJoin = 0
 	gapNJ = 0
-	print(strings)
+	#print(strings)
 	return strings

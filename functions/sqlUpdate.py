@@ -35,7 +35,7 @@ def updateAllRows(data,tbl,query):
 			data[tbl][j][query[i]] = query[i+2]
 		cnt+=1
 		i+=4
-	return cnt
+	print("   ",cnt," row(s) affected.",end="");
 
 # Updates some rows filtered by the WHERE clause
 # data - stores the table data
@@ -57,6 +57,7 @@ def updateRows(data,tb,tbl,query,pk,wIndex):
 				data[tbl][pk[j]][query[i]] = query[i+2]
 			i+=4
 		j+=1
+	print("   ",j," row(s) affected.",end="");
 
 # Returns true if there is a duplicate entry in the primary key, false otherwise
 def isDuplicateEntry(data,tb,tbl,changeList,whereList,pk):

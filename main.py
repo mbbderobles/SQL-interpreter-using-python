@@ -10,7 +10,7 @@ sys.path.insert(0,'./functions/')
 
 # All user-defined libraries (.py) must be placed in the functions folder.
 # If the python file will be used here, import it below:
-import lexer, myparser, evalExp, procRecTextFile
+import lexer, myparser, myparser2, evalExp, procRecTextFile
 
 # start ##########################################
 
@@ -35,11 +35,15 @@ while True:
 		if(error): #check if there are no invalid tokens
 			print("   ERROR: Invalid token near", error)
 		else:
-			print('   All tokens valid')
+			#print('   All tokens valid')
 			tokens = myparser.parse(query)
 			if len(tokens) !=0: #the query is valid
-				print("   Syntax is valid")
-				evalExp.main(tokens,MainHashTable,metaTB)
+				#print("   Syntax is valid")
+				error = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
+				if(error == False):
+					evalExp.main(tokens,MainHashTable,metaTB)
+				else:
+					print("   ERROR: Invalid table/column near", error)
 			else:
 				print("   Syntax is invalid")
  		#if correct:

@@ -23,7 +23,7 @@ def update(data,tb,query):
 			print("   ERROR: Duplicate entry for PRIMARY KEY. ",end="");
 	else:													# No WHERE clause
 		if(not isDuplicateEntry(data,tb,tbl,query,[],[])):
-			cnt = updateAllRows(data,tbl,query)
+			cnt = updateAllRows(data,tb,tbl,query)
 			print("   ",cnt," row(s) affected.",end="");
 		else:
 			print("   ERROR: Duplicate entry for PRIMARY KEY. ",end="");
@@ -33,12 +33,12 @@ def update(data,tb,query):
 # data - stores the table data
 # tbl - stores the table name
 # query - contains the update query
-def updateAllRows(data,tbl,query):
+def updateAllRows(data,tb,tbl,query):
 	i=0
 	cnt=0
 	while(i < len(query)):
 		for j in data[tbl].keys():
-			data[tbl][j][query[i]] = query[i+2]
+			data[tbl][j][query[i]] = convertValues(tb,tbl,query[i],query[i+2])
 			if(i==0):
 				cnt+=1
 		i+=4
@@ -61,7 +61,7 @@ def updateRows(data,tb,tbl,query,pk,wIndex):
 				del data[tbl][pk[j]]
 				data[tbl][query[i+2]] = temp
 			else:
-				data[tbl][pk[j]][query[i]] = query[i+2]
+				data[tbl][pk[j]][query[i]] = convertValues(tb,tbl,query[i],query[i+2])
 			i+=4
 		j+=1
 	
@@ -98,3 +98,21 @@ def isPrimaryValue(tbl,data,val):
 	if(val in data[tbl].keys()):
 		return True
 	return False
+
+# Returns the data type of the column
+def getType(tb,tbl,col):
+	i = 0
+	while(i<5):
+		if(col == tb[tbl][i][0]):
+			return tb[tbl][i][1]
+		i+=1
+
+def convertValues(tb,tbl,col,value):
+	if(getType(tb,tbl,col) == "int"):
+		return int(float(value))
+	elif(getType(tb,tbl,col) == "float"):
+		return float(value)
+	elif(getType(tb,tbl,col) == "varchar"):
+		return value[1:-1]
+	elif(getType(tb,tbl,col) == "date"):
+		return value[1:-1]

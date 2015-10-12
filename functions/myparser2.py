@@ -4,10 +4,7 @@ def checkSemantics(query,data,tb):
 	cols_query = []
 	tableName = ""
 	error = ""
-	if(query[0].lower() == "select"):
-		#getColumnsFromMetadata(tableName)
-		print("Waley pa")
-	elif(query[0].lower() == "update"):
+	if(query[0].lower() == "update"):
 		tableName = query[1]
 		error = checkTable(tableName,tb)							# check if table exists
 		if(error == False):
@@ -17,24 +14,36 @@ def checkSemantics(query,data,tb):
 			if(error == False and ("where" in query or "WHERE" in query)):
 				wIndex = getWhereIndex(query)
 				cols_query = getColumnsFromWhereQuery(query[wIndex+1:])
-				return (checkColumns(cols_query,cols_tb))			# check if columns in where clause exists
+				error = checkColumns(cols_query,cols_tb)			# check if columns in where clause exists
+				if(error == False):
+					error = checkColumnValues(tableName,tb,query[3:wIndex])		# check columns values of set clause
+					if(error == False):
+						return (checkColumnValues(tableName,tb,query[wIndex+1:]),"value")	# check columns values of where clause
+					else:
+						return error,"value"
+			elif(error == False and not ("where" in query or "WHERE" in query)):
+				return (checkColumnValues(tableName,tb,query[3:]),"value")		# check columns values of where clause
 			else:
-				return error
+				return error,"column"										# error on column name
 		else:
-			return error											# error on table name
+			return error,"table"											# error on table name
 	elif(query[0].lower() == "delete"):	
 		tableName = query[2]
 		error = checkTable(tableName,tb)
 		if(error == False and ("where" in query or "WHERE" in query)):
 			wIndex = getWhereIndex(query)
-			cols_tb = getColumnsFromMetadata(tableName,tb)			# gets list of columns from metadata
+			cols_tb = getColumnsFromMetadata(tableName,tb)					# gets list of columns from metadata
 			cols_query = getColumnsFromWhereQuery(query[wIndex+1:])
-			return (checkColumns(cols_query,cols_tb))				# check if columns in where clause exists
+			error = checkColumns(cols_query,cols_tb)						# check if columns in where clause exists
+			if(error == False):
+				return (checkColumnValues(tableName,tb,query[wIndex+1:]),"value")	# check columns values of where clause
+			else:
+				return error,"column"
 		else:
-			return error
-
-	else:
-		print("Processing query "+ str(query))
+			return error,"table"
+	elif(query[0].lower() == "desc"):
+		tableName = query[1]	
+		return (checkTable(tableName,tb),"table")
 
 # Gets the index of the WHERE keyword
 def getWhereIndex(query):
@@ -60,9 +69,7 @@ def getColumnsFromMetadata(tableName,tb):
 # Gets the Columns of a table from query
 def getColumnsFromQuery(query,statement):
 	cols_query = []
-	if(statement == "select"):
-		print("Waley pa")
-	elif(statement == "update"):
+	if(statement == "update"):
 		i = 3
 		if("where" in query or "WHERE" in query):
 			wIndex = getWhereIndex(query)
@@ -94,3 +101,27 @@ def checkColumns(cols_query,cols_tb):
 		i += 1
 
 	return False
+
+# Checks whether the type of values are appropriate for the column
+def checkColumnValues(tbl,tb,changeList):
+	i = 0
+	while(i < len(changeList)):
+		if(getType(tb,tbl,changeList[i]) == "varchar" or getType(tb,tbl,changeList[i]) == "date"):
+			if("'" in str(changeList[i+2]) or '"' in str(changeList[i+2])):
+				return False
+			else:
+				return str(changeList[i+2])
+		else:
+			if("'" in str(changeList[i+2]) or '"' in str(changeList[i+2])):
+				return str(changeList[i+2])
+			else:
+				return False
+		i+=4
+
+# Returns the data type of the column
+def getType(tb,tbl,col):
+	i = 0
+	while(i<5):
+		if(col == tb[tbl][i][0]):
+			return tb[tbl][i][1]
+		i+=1

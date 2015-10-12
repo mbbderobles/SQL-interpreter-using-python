@@ -8,19 +8,22 @@ import sqlUtils,sqlWhere
 # query - contains the update query
 def update(data,tb,query):
 	tbl = query[1]											# Stores the table name to tbl
-	query = query[3:]
-	cnt = 0										# Remove other elements in the list
+	query = query[3:]										# Remove other elements in the list
+	pk = []
 	if("where" in query or "WHERE" in query):				# Checks if query contains the WHERE clause
 		wIndex = sqlUtils.getWhereIndex(query)				# Gets the index of the WHERE keyword
 		pk = sqlWhere.processWhereStmt(tb, tbl, data[tbl], query[wIndex+1:])	# Gets list of rows to be updated
 		if(not isDuplicateEntry(data,tb,tbl,query[:wIndex],query[wIndex+1:],pk) and pk):
 			updateRows(data,tb,tbl,query,pk,wIndex)
+			print("   ",len(pk)," row(s) affected.",end="");
+		else:
+			print("ERROR: Duplicate entry for PRIMARY KEY. ",end="");
 	else:													# No WHERE clause
 		if(not isDuplicateEntry(data,tb,tbl,query,[],[]) and pk):
 			cnt = updateAllRows(data,tbl,query)
-			sqlUtils.printUpdate(cnt)
-
-	return cnt
+			print("   ",len(pk)," row(s) affected.",end="");
+		else:
+			print("ERROR: Duplicate entry for PRIMARY KEY. ",end="");
 
 
 # Updates all rows
@@ -35,7 +38,6 @@ def updateAllRows(data,tbl,query):
 			data[tbl][j][query[i]] = query[i+2]
 		cnt+=1
 		i+=4
-	print("   ",cnt," row(s) affected.",end="");
 
 # Updates some rows filtered by the WHERE clause
 # data - stores the table data
@@ -57,7 +59,7 @@ def updateRows(data,tb,tbl,query,pk,wIndex):
 				data[tbl][pk[j]][query[i]] = query[i+2]
 			i+=4
 		j+=1
-	print("   ",j," row(s) affected.",end="");
+	
 
 # Returns true if there is a duplicate entry in the primary key, false otherwise
 def isDuplicateEntry(data,tb,tbl,changeList,whereList,pk):

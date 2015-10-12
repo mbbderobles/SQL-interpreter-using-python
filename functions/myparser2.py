@@ -13,13 +13,26 @@ def checkSemantics(query,data,tb):
 		if(error == False):
 			cols_tb = getColumnsFromMetadata(tableName,tb)			# gets list of columns from metadata
 			cols_query = getColumnsFromQuery(query,"update")		# gets list of columsn from query
-			return(checkColumns(cols_query,cols_tb))				# check if columns exists
+			error = checkColumns(cols_query,cols_tb)				# check if columns exists
+			if(error == False and ("where" in query or "WHERE" in query)):
+				wIndex = getWhereIndex(query)
+				cols_query = getColumnsFromWhereQuery(query[wIndex+1:])
+				return (checkColumns(cols_query,cols_tb))			# check if columns in where clause exists
+			else:
+				return error
 		else:
 			return error											# error on table name
 	elif(query[0].lower() == "delete"):	
-		print("Processing query "+ str(query))
-		
-		#to check print the dictionary for sales_h
+		tableName = query[2]
+		error = checkTable(tableName,tb)
+		if(error == False and ("where" in query or "WHERE" in query)):
+			wIndex = getWhereIndex(query)
+			cols_tb = getColumnsFromMetadata(tableName,tb)			# gets list of columns from metadata
+			cols_query = getColumnsFromWhereQuery(query[wIndex+1:])
+			return (checkColumns(cols_query,cols_tb))				# check if columns in where clause exists
+		else:
+			return error
+
 	else:
 		print("Processing query "+ str(query))
 
@@ -61,6 +74,15 @@ def getColumnsFromQuery(query,statement):
 				cols_query.append(query[i])
 				i+=4
 
+	return cols_query
+
+# Gets the Columns of a table from wherequery
+def getColumnsFromWhereQuery(query):
+	cols_query = []
+	i=0
+	while(i < len(query)):
+		cols_query.append(query[i])
+		i+=4
 	return cols_query
 
 # Checks whether the columns exist

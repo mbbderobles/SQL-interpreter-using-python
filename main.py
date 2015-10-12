@@ -41,6 +41,7 @@ while True:
 				#print("   Syntax is valid")
 				error = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
 				if(error == False):
+					print(tokens)
 					evalExp.main(tokens,MainHashTable,metaTB)
 				else:
 					print("   ERROR: Invalid table/column near", error)

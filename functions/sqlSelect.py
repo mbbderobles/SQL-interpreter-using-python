@@ -4,6 +4,13 @@ data = {}
 
 ''' START OF UTILITY FUNCTIONS HERE '''
 
+def checkTable(table):
+	if(table in tb.keys()):
+		return True
+	else:
+		print('table \''+str(table)+'\' does not exist.')
+		return False
+
 ''' +++ GET COLUMNS FROM METADATA '''
 def getColumns(tableName):
 	cols = []
@@ -25,11 +32,13 @@ def getColsToPrint(tokens,join):
 		#if join
 		else:
 			i = 0;
-			print(tokens)
 			while i<len(tokens):
 				if(tokens[i]!=','):
 					if(tokens[i-1]==',' or i==0):
-						cols.extend(getColumns(tokens[i]))
+						if(checkTable(tokens[i])):
+							cols.extend(getColumns(tokens[i]))
+						else:
+							return False,tokens
 				i = i+1
 	#if rows are in query
 	else:
@@ -657,70 +666,72 @@ def wherefunction(tokens):
 # ++++ JOIN STATEMENT WITH ON ++++++++++++++++++++++++++++++++++++++++++++++++++
 def joinWithOn(tokens):
 	cols,tokens = getColsToPrint(tokens,True);
-	tables,tokens = getJoinTables(tokens)
-	result = joinTables(tables)
-	
-	temp = []
-	nextCond = ''
-	while(len(tokens)!=0):
-#		print(tokens)
-		tokens = tokens[1:]
-		signIndex = -1
-		if('<' in tokens):
-			signIndex = tokens.index('<')
-		if('>' in tokens):
-			if(signIndex>tokens.index('>') or signIndex==-1):
-				signIndex = tokens.index('>')
-		if('=' in tokens):
-			if(signIndex>tokens.index('=') or signIndex==-1):
-				signIndex = tokens.index('=')
-		if('!=' in tokens):
-			if(signIndex>tokens.index('!=') or signIndex==-1):
-				signIndex = tokens.index('!=')
+	if(cols):
+		tables,tokens = getJoinTables(tokens)
+		result = joinTables(tables)
+		
+		temp = []
+		nextCond = ''
+		while(len(tokens)!=0):
+	#		print(tokens)
+			tokens = tokens[1:]
+			signIndex = -1
+			if('<' in tokens):
+				signIndex = tokens.index('<')
+			if('>' in tokens):
+				if(signIndex>tokens.index('>') or signIndex==-1):
+					signIndex = tokens.index('>')
+			if('=' in tokens):
+				if(signIndex>tokens.index('=') or signIndex==-1):
+					signIndex = tokens.index('=')
+			if('!=' in tokens):
+				if(signIndex>tokens.index('!=') or signIndex==-1):
+					signIndex = tokens.index('!=')
 
-		sign = tokens[signIndex]
-		var1 = tokens[0:signIndex]
-		var2 = tokens[signIndex+1:]
+			sign = tokens[signIndex]
+			var1 = tokens[0:signIndex]
+			var2 = tokens[signIndex+1:]
 
-		if('on' in var2 or 'and' in var2 or 'or' in var2):
-			nearest = getNearest(var2)
-			tokens = var2[nearest:]
-			var2 = var2[:nearest]
-			nextCond = tokens[0]
-		#elif and in var2 and or in var2
-		else:
-			tokens = []
+			if('on' in var2 or 'and' in var2 or 'or' in var2):
+				nearest = getNearest(var2)
+				tokens = var2[nearest:]
+				var2 = var2[:nearest]
+				nextCond = tokens[0]
+			#elif and in var2 and or in var2
+			else:
+				tokens = []
 
-#		print('var1',var1)
-#		print('var2',var2)
-#		print('toks',tokens)
-#		break
+	#		print('var1',var1)
+	#		print('var2',var2)
+	#		print('toks',tokens)
+	#		break
 
-		if(len(var1)>1 and len(var2)>1):
-			#print('both side')
-			temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
-			#print(temp1)
-			#print(temp2)
-			temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
-		elif(len(var1)>1):
-			#print('right side single')
-			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-			#print(temp1)
-			temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
-		elif(len(var2)>1):
-			#print('left side single')
-			temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
-			temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
-		else:
-			print('both side single')
-		cond = nextCond
-		if(len(tokens)!=0):
-			temp.append(cond)
-	
-	temp = evalAndOr(temp)
-	result = getColsFromKeys(cols,temp[0],tables)
-	
-	return result,cols
+			if(len(var1)>1 and len(var2)>1):
+				#print('both side')
+				temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
+				#print(temp1)
+				#print(temp2)
+				temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
+			elif(len(var1)>1):
+				#print('right side single')
+				temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
+				#print(temp1)
+				temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
+			elif(len(var2)>1):
+				#print('left side single')
+				temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
+				temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
+			else:
+				print('both side single')
+			cond = nextCond
+			if(len(tokens)!=0):
+				temp.append(cond)
+		
+		temp = evalAndOr(temp)
+		result = getColsFromKeys(cols,temp[0],tables)
+		
+		return result,cols
+	return False,cols
 	#check if it has more than one condition
 #	print("Columns: ",cols)	
 #	print("Tables: ",tables)
@@ -730,95 +741,100 @@ def joinWithOn(tokens):
 def joinWithoutOn(tokens):
 	#get columns and tokens to print
 	cols,tokens = getColsToPrint(tokens,True);
-	tables,tokens = getTables(tokens,'none')
+	if(cols):
+		tables,tokens = getTables(tokens,'none')
 
-	#populate list (per column)
-	printData = joinTables(tables)
-	result = getColsFromKeys(cols,printData,tables)	
-	#printData
-	return result,cols
+		#populate list (per column)
+		printData = joinTables(tables)
+		result = getColsFromKeys(cols,printData,tables)	
+		#printData
+		return result,cols
+	return False,cols
 
 # ++++ CROSS PRODUCT AND JOIN STATEMENT WITHOUT ON CLAUSE ++++++++++++++++++++++
 def joinWithWhereWithoutOn(tokens,where):
 	#get columns and tokens to print
 	cols,tokens = getColsToPrint(tokens,True);
-	tables,tokens = getTables(tokens,'none')
+	if(cols):
+		tables,tokens = getTables(tokens,'none')
 
-	result = joinTables(tables)
-	result = evaluateWhere(result,tables,where)
-	result = getColsFromKeys(cols,result[0],tables)
-	
-	#printData
-	return result,cols
-
+		result = joinTables(tables)
+		result = evaluateWhere(result,tables,where)
+		result = getColsFromKeys(cols,result[0],tables)
+		
+		#printData
+		return result,cols
+	return False,cols
 
 # ++++ JOIN WITH WHERE WITH ON STATEMENT +++++++++++++++++++++++++++++++++++++++++++++++
 def joinWithWhereWithOn(tokens,where):
 	cols,tokens = getColsToPrint(tokens,True);
-	tables,tokens = getJoinTables(tokens)
-	result = joinTables(tables)
-	
-	temp = []
-	nextCond = ''
-	while(len(tokens)!=0):
-#		print(tokens)
-		tokens = tokens[1:]
-		signIndex = -1
-		if('<' in tokens):
-			signIndex = tokens.index('<')
-		if('>' in tokens):
-			if(signIndex>tokens.index('>') or signIndex==-1):
-				signIndex = tokens.index('>')
-		if('=' in tokens):
-			if(signIndex>tokens.index('=') or signIndex==-1):
-				signIndex = tokens.index('=')
-		if('!=' in tokens):
-			if(signIndex>tokens.index('!=') or signIndex==-1):
-				signIndex = tokens.index('!=')
+	if(cols):
+		tables,tokens = getJoinTables(tokens)
+		result = joinTables(tables)
+		
+		temp = []
+		nextCond = ''
+		while(len(tokens)!=0):
+	#		print(tokens)
+			tokens = tokens[1:]
+			signIndex = -1
+			if('<' in tokens):
+				signIndex = tokens.index('<')
+			if('>' in tokens):
+				if(signIndex>tokens.index('>') or signIndex==-1):
+					signIndex = tokens.index('>')
+			if('=' in tokens):
+				if(signIndex>tokens.index('=') or signIndex==-1):
+					signIndex = tokens.index('=')
+			if('!=' in tokens):
+				if(signIndex>tokens.index('!=') or signIndex==-1):
+					signIndex = tokens.index('!=')
 
-		sign = tokens[signIndex]
-		var1 = tokens[0:signIndex]
-		var2 = tokens[signIndex+1:]
+			sign = tokens[signIndex]
+			var1 = tokens[0:signIndex]
+			var2 = tokens[signIndex+1:]
 
-		if('on' in var2 or 'and' in var2 or 'or' in var2):
-			nearest = getNearest(var2)
-			tokens = var2[nearest:]
-			var2 = var2[:nearest]
-			nextCond = tokens[0]
-		#elif and in var2 and or in var2
-		else:
-			tokens = []
+			if('on' in var2 or 'and' in var2 or 'or' in var2):
+				nearest = getNearest(var2)
+				tokens = var2[nearest:]
+				var2 = var2[:nearest]
+				nextCond = tokens[0]
+			#elif and in var2 and or in var2
+			else:
+				tokens = []
 
-#		print('var1',var1)
-#		print('var2',var2)
-#		print('toks',tokens)
-#		break
+	#		print('var1',var1)
+	#		print('var2',var2)
+	#		print('toks',tokens)
+	#		break
 
-		if(len(var1)>1 and len(var2)>1):
-			#print('both side')
-			temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
-			temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
-		elif(len(var1)>1):
-			#print('right side single')
-			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-			temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
-		elif(len(var2)>1):
-			#print('left side single')
-			temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
-			temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
-		else:
-			print('both side single')
-		cond = nextCond
-		if(len(tokens)!=0):
-			temp.append(cond)
-	
-	temp = evalAndOr(temp)
-	#print('after on: ',temp)
-	result = evaluateWhere(temp[0],tables,where)
-	#print('after where: ',result)
-	result = getColsFromKeys(cols,result[0],tables)	
-	
-	return result,cols
+			if(len(var1)>1 and len(var2)>1):
+				#print('both side')
+				temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
+				temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
+			elif(len(var1)>1):
+				#print('right side single')
+				temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
+				temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
+			elif(len(var2)>1):
+				#print('left side single')
+				temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
+				temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
+			else:
+				print('both side single')
+			cond = nextCond
+			if(len(tokens)!=0):
+				temp.append(cond)
+		
+		temp = evalAndOr(temp)
+		#print('after on: ',temp)
+		result = evaluateWhere(temp[0],tables,where)
+		#print('after where: ',result)
+		result = getColsFromKeys(cols,result[0],tables)	
+		
+		return result,cols
+	return False,cols
 	#check if it has more than one condition
 #	print("Columns: ",cols)	
 #	print("Tables: ",tables)
@@ -829,50 +845,57 @@ def replaceAll(what,tokens):
 		for j in tokens:
 			if(type(j)==str):
 				j.replace(li[0],li[1])
+	return tokens
 
 # ++++ SIMPLEST SELECT STATEMENT +++++++++++++++++++++++++++++++++++++++++++++++
 def normalSelect(tokens):
 	cols,tokens = getColsToPrint(tokens,'False');
-	tables = tokens.pop(0)
-	printData = []
-	pK = getTablePK(tables)
-	counter = 0
-	for i in data[tables].keys():
-		temp = []
-		counter += 1
-		for col in cols:
-			if(col==pK):
-				temp.append(i)
-			else:
-				temp.append(data[tables][i][col])
-		printData.append(temp)
-	
-	return printData,cols
-
+	print(cols,tokens)
+	if(cols):
+		tables = tokens.pop(0)
+		printData = []
+		pK = getTablePK(tables)
+		counter = 0
+		for i in data[tables].keys():
+			temp = []
+			counter += 1
+			for col in cols:
+				if(col==pK):
+					temp.append(i)
+				else:
+					temp.append(data[tables][i][col])
+			printData.append(temp)
+		
+		return printData,cols
+	return False,cols
 
 def normalSelectWhere(tokens,where):
 	cols,tokens = getColsToPrint(tokens,'False');
-	tables = tokens.pop(0)
+	if(cols):
+		tables = tokens.pop(0)
 
-	printData = []
-	for i in data[tables].keys():
-		printData.append(i)
-	
-	result = evaluateWhere(printData,tables,where)
-	result = getColsFromKeys(cols,result[0],tables)	
+		printData = []
+		for i in data[tables].keys():
+			printData.append(i)
+		
+		result = evaluateWhere(printData,tables,where)
+		result = getColsFromKeys(cols,result[0],tables)	
 
-	return result,cols
+		return result,cols
+	return False,cols
 
 def joinWithoutOnWhere(tokens,where):
 	cols,tokens = getColsToPrint(tokens,'False');
-	tables,tokens = getTables(tokens,'none')
+	if(cols):
+		tables,tokens = getTables(tokens,'none')
 
-	#populate list (per column)
-	printData = joinTables(tables)
-	result = evaluateWhere(printData,tables,where)
-	result = getColsFromKeys(cols,result[0],tables)	
+		#populate list (per column)
+		printData = joinTables(tables)
+		result = evaluateWhere(printData,tables,where)
+		result = getColsFromKeys(cols,result[0],tables)	
 
-	return result,cols
+		return result,cols
+	return False,cols
 
 # ++++ MAIN FUNCTION +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def evaluate(tokens,tables,rows):
@@ -944,6 +967,7 @@ def evaluate(tokens,tables,rows):
 
 	elif 'join' in tokens or 'JOIN' in tokens: #join only
 		tokens = replaceAll([['join',','],['JOIN',',']],tokens)
+		print(tokens)
 		if('ON' in tokens or 'on' in tokens): #if there is an on statement
 			tokens = replaceAll([['ON','on'],['AND','and'],['OR','or']],tokens)
 			result,cols = joinWithOn(tokens)
@@ -953,8 +977,8 @@ def evaluate(tokens,tables,rows):
 			elif(type(result)!=bool and len(result)==0):
 				print("   ",len(result)," row(s) returned.",end="")
 		else:
+			result,cols = joinWithoutOn(tokens)
 			if(result):
-				result,cols = joinWithoutOn(tokens)
 				tabulate(result,cols)
 				print("   ",len(result)," row(s) returned.",end="");
 			elif(type(result)!=bool and len(result)==0):
@@ -967,9 +991,15 @@ def evaluate(tokens,tables,rows):
 			index = tokens.index('FROM');
 		if isCrossProduct(index,len(tokens)):
 			printData,cols = joinWithoutOn(tokens)
-			tabulate(printData,cols)
-			print("   ",len(printData)," row(s) returned.",end="")
+			if(printData):
+				tabulate(printData,cols)
+				print("   ",len(printData)," row(s) returned.",end="")
+			elif(type(printData)!=bool and len(printData)==0):
+				print("   ",len(printData)," row(s) returned.",end="")
 		else:
 			printData,cols = normalSelect(tokens)
-			tabulate(printData,cols)
-			print("   ",len(printData)," row(s) returned.",end="")
+			if(printData):
+				tabulate(printData,cols)
+				print("   ",len(printData)," row(s) returned.",end="")
+			elif(type(printData)!=bool and len(printData)==0):
+				print("   ",len(printData)," row(s) returned.",end="")

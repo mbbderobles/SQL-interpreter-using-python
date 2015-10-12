@@ -39,12 +39,16 @@ while True:
 			tokens = myparser.parse(query)
 			if len(tokens) !=0: #the query is valid
 				#print("   Syntax is valid")
-				error = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
-				if(error == False):
-					print(tokens)
-					evalExp.main(tokens,MainHashTable,metaTB)
+				print(tokens)
+				if(not('select' in tokens) and not('SELECT' in tokens)):
+					error = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
+					if(error == False):
+						evalExp.main(tokens,MainHashTable,metaTB)
+					else:
+						print("   ERROR: Invalid table/column near", error)
 				else:
-					print("   ERROR: Invalid table/column near", error)
+					tokens = ['select','*','from','x','join','y','on','x','<','5'];
+					evalExp.main(tokens,MainHashTable,metaTB)
 			else:
 				print("   Syntax is invalid")
  		#if correct:

@@ -3,7 +3,7 @@ import lexer
 
 tokens = lexer.tokens
 
-#precedence = (('left', 'AND', 'OR'),('right','UMINUS'))
+##precedence = (('left', 'AND', 'OR'),('right','UMINUS'))
 
 strings = []
 cols = []
@@ -11,6 +11,10 @@ tbl = []
 flag = 0
 count = 0
 gap = 3
+counter = 0
+counter2 = 0
+gapJoin = 0
+gapNJ = 3
 
 def p_program(p):
 	'''program : statement SEMICOLON'''
@@ -18,11 +22,13 @@ def p_program(p):
 	global gap
 	count = 0
 	gap = 3
+	
 
 def p_statement(p):
 	'''statement : SELECT select_statement
 		| UPDATE update_statement
-		| DELETE delete_statement'''
+		| DELETE delete_statement
+		| DESC desc_statement'''
 	
 	strings.insert(0,p[1])
 
@@ -38,13 +44,36 @@ def p_columns(p):
 		strings.append(p[1])
 	
 	cols.insert(0,p[1])
+	
+def p_columns2(p):
+	'''columns2 : IDENTIFIER EQUAL NUMBER COMMA columns2
+	| IDENTIFIER EQUAL STRING COMMA columns2
+	| IDENTIFIER EQUAL STRING
+	| IDENTIFIER EQUAL NUMBER''' 
 
+	if (len(p) == 6) :
+		strings.insert(0,p[4])
+		strings.insert(0,p[3])
+		strings.insert(0,p[2])
+		strings.insert(0,p[1])
+
+	elif (len(p) == 4) :
+		strings.insert(0,p[3])
+		strings.insert(0,p[2])
+		strings.insert(0,p[1])
+
+def p_desc_statement(p):
+	'''desc_statement : IDENTIFIER'''
+	
+	strings.insert(0,p[1])
+	
 
 def p_select_statement(p):
 	
 	'''select_statement : select_option from_statement
 	| select_option from_statement where_statement expression
-	| select_option from_statement join_option'''
+	| select_option from_statement join_statement
+	| select_option from_statement natural_join_statement'''
 
 			
 def p_select_option(p):
@@ -53,98 +82,128 @@ def p_select_option(p):
 	
 	if p[1] == '*' :
 			strings.insert(0,p[1])
-
-
-def p_from_statement(p):
+			
+def p_update_statement(p):
+	'''update_statement : IDENTIFIER SET columns2 where_statement expression
+	| IDENTIFIER SET columns2'''
 	
+	if (len(p) == 6) :
+		strings.insert(0,p[2])
+		strings.insert(0,p[1])
+	else :
+		strings.insert(0,p[2])
+		strings.insert(0,p[1])
+
+
+def p_delete_statement(p):
+	'''delete_statement : from_statement
+	| from_statement where_statement expression'''
+
+
+def p_from_statement(p):	
 	'''from_statement : FROM IDENTIFIER'''
 	strings.append(p[1])
 	strings.append(p[2])
 	
 	tbl.append(p[2])
 	
-def p_join_option(p):
-	'''join_option : join_statement ON expression2
-	| join_statement ON expression2 join_option
-	| join_statement join_option
-	| join_statement'''
-	
-	if(len(p) == 5 or len(p) == 4):
-		strings.insert(len(strings)-3,p[2])
-	
-
-def p_join_statement(p):
-	'''join_statement : JOIN IDENTIFIER'''
-	
-	strings.append(p[1])
-	strings.append(p[2])	
-	tbl.append(p[2])
-
-
-
-def p_expression2(p):
-	'''expression2 : IDENTIFIER EQUAL IDENTIFIER AND expression2
-	| IDENTIFIER EQUAL IDENTIFIER OR expression2
-	| IDENTIFIER EQUAL IDENTIFIER'''
-	
-	global count
-	global gap
-	global strings
-	index = len(strings)-gap
-	
-	if(len(p) == 6):
-		strings.insert(index,p[4])
-		strings.insert(index,p[3])
-		strings.insert(index,p[2])
-		strings.insert(index,p[1])
-		gap = gap + 4
-	
-	elif(len(p) == 4):
-		strings.append(p[1])
-		strings.append(p[2])
-		strings.append(p[3])
-
-	
-	coLen = len(cols)
-	count = 0
-	flagp1 = 0
-	flagp3 = 0
-	
-	while(count < coLen):
-		if(p[1] == cols[count]):
-			flagp1 = 1
-		if(p[3] != cols[count]):
-			flagp3 = 1
-		count = count + 1
-	
-	if(flagp1 == 0):
-		cols.insert(0,p[1])
-	if(flagp3 == 0):
-		cols.insert(0,p[3])
-	
-	
-	
 def p_where_statement(p):
 	'''where_statement : WHERE'''
 
 	strings.append(p[1])
+	
+	
+def p_natural_join_statement(p):
+	'''natural_join_statement : NATURAL JOIN IDENTIFIER natural_join_statement
+	| NATURAL JOIN IDENTIFIER'''
+	
+	global gapNJ
+	index = len(strings)
+	if(len(p) == 5):
+		strings.insert(index - gapNJ,p[3])
+		strings.insert(index - gapNJ,p[2])
+		strings.insert(index - gapNJ,p[1])
+		gapNJ = gapNJ + 3;
+	
+	else:
+		strings.append(p[1])
+		strings.append(p[2])
+		strings.append(p[3])
+		
+
+	
+def p_join_statement(p):
+	'''join_statement : JOIN IDENTIFIER join_statement
+	| JOIN IDENTIFIER ON expression2 join_statement
+	| JOIN IDENTIFIER ON expression2
+	| JOIN IDENTIFIER'''
+	global gapJoin
+	global counter
+	global counter2
+	
+	index = len(strings)
+	if(len(p) == 6 or len(p) == 5):
+		
+		if(counter == 0):
+			if(counter2 > 0):
+				gapJoin = 3 + (counter2 * 2)
+			elif(counter2 == 0):
+				gapJoin = 3
+		elif(counter > 0):
+			if(counter2 > 0):
+				gapJoin = (3 + (counter * 6)) + (counter2 * 2)
+			elif(counter2 == 0):
+				gapJoin = 3 + (counter * 6)
+		
+		strings.insert(index-gapJoin,p[3])
+		strings.insert(index-gapJoin,p[2])
+		strings.insert(index-gapJoin,p[1])
+		counter = counter + 1
+		
+		
+	elif(len(p) == 4 or len(p) == 3):
+		
+		if(counter2 == 0):
+			if(counter > 0):
+				gapJoin = counter * 6 
+			elif(counter == 0):
+				gapJoin = 0
+		elif(counter2 > 0):
+			if(counter > 0):
+				gapJoin = (counter * 6)+(counter2 * 2)
+			elif(counter == 0):
+				gapJoin = (counter2 * 2)
+		
+		strings.insert(index-gapJoin,p[2])
+		strings.insert(index-gapJoin,p[1])
+		counter2 = counter2 + 1
+		
+	tbl.append(p[2])
+
+
 
 def p_expression(p):
-	'''expression : IDENTIFIER EQUAL NUMBER AND expression
-		| IDENTIFIER EQUAL STRING AND expression
+	'''expression : IDENTIFIER EQUAL STRING AND expression
+		| IDENTIFIER EQUAL NUMBER AND expression
+		| IDENTIFIER LESSTHAN STRING AND expression
 		| IDENTIFIER LESSTHAN NUMBER AND expression
+		| IDENTIFIER GREATERTHAN STRING AND expression
 		| IDENTIFIER GREATERTHAN NUMBER AND expression
 		| IDENTIFIER NOTEQUAL STRING AND expression
 		| IDENTIFIER NOTEQUAL NUMBER AND expression
-		| IDENTIFIER EQUAL NUMBER OR expression
 		| IDENTIFIER EQUAL STRING OR expression
+		| IDENTIFIER EQUAL NUMBER OR expression
+		| IDENTIFIER LESSTHAN STRING OR expression
 		| IDENTIFIER LESSTHAN NUMBER OR expression
+		| IDENTIFIER GREATERTHAN STRING OR expression
 		| IDENTIFIER GREATERTHAN NUMBER OR expression
 		| IDENTIFIER NOTEQUAL STRING OR expression
 		| IDENTIFIER NOTEQUAL NUMBER OR expression
-		| IDENTIFIER EQUAL NUMBER 
-		| IDENTIFIER EQUAL STRING
+		| IDENTIFIER EQUAL STRING 
+		| IDENTIFIER EQUAL NUMBER
+		| IDENTIFIER LESSTHAN STRING
 		| IDENTIFIER LESSTHAN NUMBER
+		| IDENTIFIER GREATERTHAN STRING
 		| IDENTIFIER GREATERTHAN NUMBER
 		| IDENTIFIER NOTEQUAL STRING
 		| IDENTIFIER NOTEQUAL NUMBER'''
@@ -180,41 +239,45 @@ def p_expression(p):
 	if(flagp1 == 0):
 		cols.insert(0,p[1])
 
-
-
-def p_update_statement(p):
-	'''update_statement : IDENTIFIER SET columns2 where_statement expression
-	| IDENTIFIER SET columns2'''
+def p_expression2(p):
+	'''expression2 : IDENTIFIER EQUAL IDENTIFIER AND expression2
+	| IDENTIFIER EQUAL IDENTIFIER OR expression2
+	| IDENTIFIER EQUAL IDENTIFIER'''
 	
-	if (len(p) == 6) :
-		strings.insert(0,p[2])
-		strings.insert(0,p[1])
-	else :
-		strings.insert(0,p[2])
-		strings.insert(0,p[1])
-
+	global count
+	global gap
+#	global strings
+	index = len(strings)
+	
+	if(len(p) == 6):
+		strings.insert(index,p[4])
+		strings.insert(index,p[3])
+		strings.insert(index,p[2])
+		strings.insert(index,p[1])
+		gap = gap + 4
+	
+	elif(len(p) == 4):
+		strings.append(p[1])
+		strings.append(p[2])
+		strings.append(p[3])
 
 	
-def p_columns2(p):
-	'''columns2 : IDENTIFIER EQUAL NUMBER COMMA columns2
-	| IDENTIFIER EQUAL STRING COMMA columns2
-	| IDENTIFIER EQUAL STRING
-	| IDENTIFIER EQUAL NUMBER''' 
-
-	if (len(p) == 6) :
-		strings.insert(0,p[4])
-		strings.insert(0,p[3])
-		strings.insert(0,p[2])
-		strings.insert(0,p[1])
-
-	elif (len(p) == 4) :
-		strings.insert(0,p[3])
-		strings.insert(0,p[2])
-		strings.insert(0,p[1])
-
-def p_delete_statement(p):
-	'''delete_statement : from_statement
-	| from_statement where_statement expression'''
+	coLen = len(cols)
+	count = 0
+	flagp1 = 0
+	flagp3 = 0
+	
+	while(count < coLen):
+		if(p[1] == cols[count]):
+			flagp1 = 1
+		if(p[3] != cols[count]):
+			flagp3 = 1
+		count = count + 1
+	
+	if(flagp1 == 0):
+		cols.insert(0,p[1])
+	if(flagp3 == 0):
+		cols.insert(0,p[3])
 	
 
 def p_error(p):
@@ -228,12 +291,16 @@ def p_error(p):
 
 
 myparser = yacc.yacc()
-#count = 0
+
 
 def parse(query):
-	global strings
+	global strings, counter, counter2, count, gapJoin, gapNJ
 	strings = []
 	myparser.parse(query)
-	print(strings)
+	count = 0
+	counter = 0
+	counter2 = 0
+	gapJoin = 0
+	gapNJ = 0
+	#print(strings)
 	return strings
-

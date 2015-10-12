@@ -144,7 +144,7 @@ def getType(var):
 		elif(var[0].isdigit()):
 			return 'int'
 		else:
-			return 'string'
+			return 'varchar'
 
 ''' checks if two clauses are type compatible '''
 def typeCompatible(var1,var2):
@@ -219,7 +219,7 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 							data2.append(k)
 		elif(sign=='<'):
 			#print('less than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				var2PK = isPK(var2[0],var2[2])
 			
@@ -243,10 +243,10 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 								data1.append(j)
 								data2.append(k)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				var2PK = isPK(var2[0],var2[2])
 			
@@ -270,7 +270,7 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 								data1.append(j)
 								data2.append(k)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='!='):
 			#print('not equal')
 			var1PK = isPK(var1[0],var1[2])
@@ -307,6 +307,8 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 		#if equality
 		if(sign=='='):
 			var1PK = isPK(var1[0],var1[2])
+			if(var2[0]=='\"' or var2[0]=="'"):
+				var2[0] = var2[0][1:len(var2[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
@@ -318,7 +320,7 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 						data1.append(j)
 		elif(sign=='<'):
 			#print('less than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 			
 				# ++ GETTING THE PK's of the matching data
@@ -330,10 +332,10 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 						if(float(data[var1[0]][j][var1[2]])<float(var2[0])):
 							data1.append(j)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				
 				# ++ GETTING THE PK's of the matching data
@@ -345,11 +347,13 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 						if(float(data[var1[0]][j][var1[2]])>float(var2[0])):
 							data1.append(j)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='!='):
 			#print('not equal')
 			var1PK = isPK(var1[0],var1[2])
 			
+			if(var2[0]=='\"' or var2[0]=="'"):
+				var2[0] = var2[0][1:len(var2[0])-1]
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
 				if(var1PK):	#if first is PK
@@ -370,6 +374,8 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 		#if equality
 		if(sign=='='):
 			var2PK = isPK(var2[0],var2[2])
+			if(var1[0]=='\"' or var1[0]=="'"):
+				var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
@@ -381,7 +387,7 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 						data1.append(j)
 		elif(sign=='<'):
 			#print('less than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var2PK = isPK(var2[0],var2[2])
 			
 				# ++ GETTING THE PK's of the matching data
@@ -393,10 +399,10 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 						if(float(var1[0])<float(data[var2[0]][j][var2[2]])):
 							data1.append(j)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='string'):
+			if(t1!='varchar'):
 				var2PK = isPK(var2[0],var2[2])
 				
 				# ++ GETTING THE PK's of the matching data
@@ -408,10 +414,12 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 						if(float(var1[0])>float(data[var2[0]][j][var2[2]])):
 							data1.append(j)
 			else:
-				print('< cannot be used on type string')
+				print('< cannot be used on type varchar')
 		elif(sign=='!='):
 			#print('not equal')
 			var2PK = isPK(var2[0],var2[2])
+			if(var1[0]=='\"' or var1[0]=="'"):
+				var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
@@ -518,7 +526,7 @@ def getColsFromKeys(cols,result,tables):
 	for col in cols:
 		counter=0;
 		tbl = getTableOfCol(col)
-		if(tbl in tables):
+		if(tbl):
 			ind = tables.index(tbl)
 			for k in result:
 				if(col==getTablePK(tbl)):
@@ -643,6 +651,9 @@ def evaluateWhere(result,tables,tokens):
 
 ''' START OF QUERY FUNCTIONS HERE '''
 
+def wherefunction(tokens):
+	print()
+
 # ++++ JOIN STATEMENT WITH ON ++++++++++++++++++++++++++++++++++++++++++++++++++
 def joinWithOn(tokens):
 	cols,tokens = getColsToPrint(tokens,True);
@@ -720,53 +731,12 @@ def joinWithoutOn(tokens):
 	#get columns and tokens to print
 	cols,tokens = getColsToPrint(tokens,True);
 	tables,tokens = getTables(tokens,'none')
-	printData = []
-	pK = []
-
-	#print(tables)
-
-	#get pK of each table
-	for i in tables:
-		pK.append(getTablePK(i))
-	maxRows = 0
-	maxTbl = ''
-	numRows = 1
-	temp = []
-
-	#get total number of rows
-	for i in tables:
-		numRows *= len(data[i].keys())
-		if len(data[i].keys()) > maxRows:
-			maxRows = len(data[i].keys())
-	print("result rows: ",numRows)
-	print("biggest num rows: ",maxRows)
-
-	#create list
-	for i in range(0,numRows):
-		printData.append([])
 
 	#populate list (per column)
-	it = 0
-	for col in cols:
-		counter=0;
-		tbl = getTableOfCol(col)
-		if(it==0):
-			it = numRows//len(data[tbl].keys())
-		else:
-			it = it/len(data[tbl].keys())
-		while counter<numRows:
-			for k in data[tbl].keys():
-				i = 0
-				while(i<it):
-					if(col==getTablePK(tbl)):
-						printData[counter].append(k)
-					else:
-						printData[counter].append(data[tbl][k][col])
-					counter += 1
-					i+=1
-	
+	printData = joinTables(tables)
+	result = getColsFromKeys(cols,printData,tables)	
 	#printData
-	return printData,cols
+	return result,cols
 
 # ++++ CROSS PRODUCT AND JOIN STATEMENT WITHOUT ON CLAUSE ++++++++++++++++++++++
 def joinWithWhereWithoutOn(tokens,where):
@@ -854,6 +824,11 @@ def joinWithWhereWithOn(tokens,where):
 #	print("Tables: ",tables)
 #	print("Tokens: ",tokens)
 
+def replaceAll(what,tokens):
+	for li in what:
+		for j in tokens:
+			if(type(j)==str):
+				j.replace(li[0],li[1])
 
 # ++++ SIMPLEST SELECT STATEMENT +++++++++++++++++++++++++++++++++++++++++++++++
 def normalSelect(tokens):
@@ -871,10 +846,33 @@ def normalSelect(tokens):
 			else:
 				temp.append(data[tables][i][col])
 		printData.append(temp)
-	print()
-	tabulate(printData,cols)
-	print("   ",counter," row(s) returned.",end="")
+	
+	return printData,cols
 
+
+def normalSelectWhere(tokens,where):
+	cols,tokens = getColsToPrint(tokens,'False');
+	tables = tokens.pop(0)
+
+	printData = []
+	for i in data[tables].keys():
+		printData.append(i)
+	
+	result = evaluateWhere(printData,tables,where)
+	result = getColsFromKeys(cols,result[0],tables)	
+
+	return result,cols
+
+def joinWithoutOnWhere(tokens,where):
+	cols,tokens = getColsToPrint(tokens,'False');
+	tables,tokens = getTables(tokens,'none')
+
+	#populate list (per column)
+	printData = joinTables(tables)
+	result = evaluateWhere(printData,tables,where)
+	result = getColsFromKeys(cols,result[0],tables)	
+
+	return result,cols
 
 # ++++ MAIN FUNCTION +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def evaluate(tokens,tables,rows):
@@ -898,66 +896,80 @@ def evaluate(tokens,tables,rows):
 		cols = []
 		if('on' in tempTok or 'ON' in tempTok):
 			#print('where with on')
-			tempTok = [k.replace('join',',') for k in tempTok]
-			tempTok = [k.replace('JOIN',',') for k in tempTok]
-			tempTok = [k.replace('ON','on') for k in tempTok]
-			tempTok = [k.replace('AND','and') for k in tempTok]
-			tempTok = [k.replace('OR','or') for k in tempTok]
+			tempTok = replaceAll([['join',','],['JOIN',','],['ON','on'],['AND','and'],['OR','or']],tempTok)
 			result,cols = joinWithWhereWithOn(tempTok,tokens)
 		else:
-			tempTok = [k.replace('join',',') for k in tempTok]
-			tempTok = [k.replace('JOIN',',') for k in tempTok]
+			tempTok = replaceAll([['join',','],['JOIN',',']],tempTok)
 			result,cols = joinWithWhereWithoutOn(tempTok,tokens)
 
-		print()
-		if(len(result)==0):
-			print("   No rows returned",end="");
-		else:
-			for i in cols:
-				print(" {}".format(i.ljust(30)),end="")
-			print()
-			for i in result:
-				for k in range(0,len(cols)):
-					print(" {}".format(i[k].ljust(30)),end="")
-				print()
-	#		print(tabulate(printData,headers=cols,tablefmt="psql"))
-			print("   ",len(result)," row(s) returned.",end="");
-
-	elif 'where' in tokens or 'WHERE' in tokens: #where only
-		print('function with where here')
-	elif 'join' in tokens or 'JOIN' in tokens: #join only
-		tokens = [k.replace('join',',') for k in tokens]
-		tokens = [k.replace('JOIN',',') for k in tokens]
-		if('ON' in tokens or 'on' in tokens): #if there is an on statement
-			tokens = [k.replace('ON','on') for k in tokens]
-			tokens = [k.replace('OR','or') for k in tokens]
-			tokens = [k.replace('AND','and') for k in tokens]
-			result,cols = joinWithOn(tokens)
-			if(result):
-				if(len(result)<1000):
-					print(tabulate(result,headers=cols,tablefmt="psql"))
-				print("   ",len(result)," row(s) returned.",end="")
-			elif(type(result)!=bool and len(result)==0):
-				print("   ",len(result)," row(s) returned.",end="")
-		else:
-			result,cols = joinWithoutOn(tokens)
+		if(result):
 			print()
 			if(len(result)==0):
 				print("   No rows returned",end="");
 			else:
-				for i in cols:
-					print(" {}".format(i.ljust(30)),end="")
-				print()
-				for i in result:
-					for k in range(0,len(cols)):
-						print(" {}".format(i[k].ljust(30)),end="")
-					print()
-		#		print(tabulate(printData,headers=cols,tablefmt="psql"))
+				tabulate(printData,cols)
 				print("   ",len(result)," row(s) returned.",end="");
-	else: #normal select statement
-		index = tokens.index('from');
-		if isCrossProduct(index,len(tokens)):
-			joinWithoutOn(tokens)
-		else:
-			normalSelect(tokens)
 
+	elif 'where' in tokens or 'WHERE' in tokens: #where only
+		idex = 0
+		if('where' in tokens):
+			idex = tokens.index('where')
+		elif('WHERE' in tokens):
+			idex = tokens.index('WHERE')
+		tempTok = tokens[0:idex]
+		tokens = tokens[idex:]
+		print(tempTok)
+		print(tokens)
+		
+		index = 0
+		if('from' in tempTok):
+			index = tempTok.index('from');
+		else:
+			index = tempTok.index('FROM');
+
+		if isCrossProduct(index,len(tempTok)):
+			result,cols = joinWithoutOnWhere(tempTok,tokens)
+			if(result):
+				tabulate(result,cols)
+				print("   ",len(result)," row(s) returned.",end="");
+			elif(type(result)!=bool and len(result)==0):
+				print("   ",len(result)," row(s) returned.",end="")
+		else:
+			result,cols = normalSelectWhere(tempTok,tokens)
+			if(result):
+				tabulate(result,cols)
+				print("   ",len(result)," row(s) returned.",end="");
+			elif(type(result)!=bool and len(result)==0):
+				print("   ",len(result)," row(s) returned.",end="")
+
+	elif 'join' in tokens or 'JOIN' in tokens: #join only
+		tokens = replaceAll([['join',','],['JOIN',',']],tokens)
+		if('ON' in tokens or 'on' in tokens): #if there is an on statement
+			tokens = replaceAll([['ON','on'],['AND','and'],['OR','or']],tokens)
+			result,cols = joinWithOn(tokens)
+			if(result):
+				tabulate(result,cols)
+				print("   ",len(result)," row(s) returned.",end="");
+			elif(type(result)!=bool and len(result)==0):
+				print("   ",len(result)," row(s) returned.",end="")
+		else:
+			if(result):
+				result,cols = joinWithoutOn(tokens)
+				tabulate(result,cols)
+				print("   ",len(result)," row(s) returned.",end="");
+			elif(type(result)!=bool and len(result)==0):
+				print("   ",len(result)," row(s) returned.",end="")
+	else: #normal select statement
+		index = 0
+		if('from' in tokens):
+			index = tokens.index('from');
+		else:
+			index = tokens.index('FROM');
+		if isCrossProduct(index,len(tokens)):
+			printData,cols = joinWithoutOn(tokens)
+			tabulate(printData,cols)
+			print("   ",len(printData)," row(s) returned.",end="")
+		else:
+			printData,cols = normalSelect(tokens)
+			tabulate(printData,cols)
+			print("   ",len(printData)," row(s) returned.",end="")

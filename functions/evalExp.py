@@ -14,7 +14,6 @@ def main(query,data,tb):
 	elif(query[0].lower() == "update"):									#evaluates update statement
 		sqlUpdate.update(data,tb,query)
 	elif(query[0].lower() == "delete"):	
-		print("Processing query "+ str(query))
 		sqlDelete.processDelQuery(tb,data,query)					#evaluates delete statement
 		
 		#to check print the dictionary for sales_h

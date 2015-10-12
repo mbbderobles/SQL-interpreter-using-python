@@ -15,6 +15,7 @@ tokens = (
 	'STRING',
 	'NUMBER',
 	'WHERE',
+	'NATURAL',
 	'JOIN',
 	'ON',
 	'COMMA',
@@ -47,6 +48,7 @@ def t_NUMBER(t):
 	return t
 
 t_WHERE = r'WHERE|where';
+t_NATURAL = 'NATURAL|natural';
 t_JOIN = r'JOIN|join'
 t_ON = r'ON|on'
 t_COMMA = r','
@@ -61,7 +63,7 @@ t_AND = r'AND|and'
 t_OR = r'OR|or'
 t_SET = r'SET|set'
 #t_IDENTIFIER = r'[a-zA-Z_]+[^ \t\n=<,>!\'\";\~]*'
-t_IDENTIFIER = r'\b(?:(?!select|update|delete|from|where|join|on|and|or|set|desc|SELECT|UPDATE|DELETE|FROM|WHERE|JOIN|ON|AND|OR|SET|DESC)\w)+[^ \t\n=<,>!\'\";\~]*\b'
+t_IDENTIFIER = r'\b(?:(?!select|update|delete|from|where|natural|join|on|and|or|set|desc|SELECT|UPDATE|DELETE|FROM|WHERE|NATURAL|JOIN|ON|AND|OR|SET|DESC)\w)+[^ \t\n=<,>!\'\";\~]*\b'
 
 t_ignore = ' \t';
 

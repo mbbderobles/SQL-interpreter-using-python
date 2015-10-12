@@ -148,9 +148,17 @@ def processWhereStmt(metadataTb, tableName, tableSource, whereStmt):
     regroupedList = []
     regroupedList2=[]
     
+     #remove all single quotes 
     newlist =[]
     for w in range(0, len(whereStmt)):
-        newlist.append((whereStmt[w].__str__()).replace('\'', ''))   
+        newlist.append((whereStmt[w].__str__()).replace('\'', ''))         
+    whereStmt= newlist
+    
+    #remove all double quotes 
+    newlist =[]
+    for w in range(0, len(whereStmt)):
+        newlist.append((whereStmt[w].__str__()).replace('\"', '')) 
+         
     whereStmt= newlist
     #print(newlist)
     # 'or' exists in whereStmt

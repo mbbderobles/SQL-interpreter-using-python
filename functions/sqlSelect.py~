@@ -107,10 +107,14 @@ def tabulate(printData,headers):
 	size = 0
 	for i in headers:
 		x = getSize(i)
-		sizes.append(x)
+		if(len(i)>x):
+			sizes.append(len(i)+2)
+			x = len(i)+2
+		else:
+			sizes.append(x)
 		size += x
 
-	print(size)
+	#print(size)
 
 	size += (3*len(sizes))+3
 	pluss = '+'*size
@@ -118,8 +122,8 @@ def tabulate(printData,headers):
 	print(pluss)
 
 	count = 0
-	print(headers)
-	print(sizes)
+	#print(headers)
+	#print(sizes)
 	for i in headers:
 		print("|  {}".format(str(i).ljust(sizes[count])), end="")
 		count += 1
@@ -289,19 +293,19 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 			for j in data[var1[0]].keys():
 				for k in data[var2[0]].keys():
 					if(var1PK and var2PK):	#if both PK
-						if(j!=k):
+						if(str(j)!=str(k)):
 							data1.append(j)
 							data2.append(k)
 					elif(var1PK):	#if first is PK
-						if(j!=data[var2[0]][k][var2[2]]):
+						if(str(j)!=str(data[var2[0]][k][var2[2]])):
 							data1.append(j)
 							data2.append(k)
 					elif(var2PK):	#if second is PK
-						if(data[var1[0]][j][var1[2]]!=k):
+						if(str(data[var1[0]][j][var1[2]])!=str(k)):
 							data1.append(j)
 							data2.append(k)
 					else:	#if both are not PK
-						if(data[var2[0]][j][var2[2]]!=data[var1[0]][k][var1[2]]):
+						if(str(data[var2[0]][j][var2[2]])!=str(data[var1[0]][k][var1[2]])):
 							data1.append(j)
 							data2.append(k)
 		
@@ -316,17 +320,19 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 		#if equality
 		if(sign=='='):
 			var1PK = isPK(var1[0],var1[2])
-			if(var2[0]=='\"' or var2[0]=="'"):
+
+			if(var2[0][0]=='\"' or var2[0][0]=="'"):
 				var2[0] = var2[0][1:len(var2[0])-1]
-			
+
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
 				if(var1PK):	#if first is PK
-					if(j==var2[0]):
+					if(str(j)==str(var2[0])):
 						data1.append(j)
 				else:	#if both are not PK
-					if(data[var1[0]][j][var1[2]]==var2[0]):
+					if(str(data[var1[0]][j][var1[2]])==str(var2[0])):
 						data1.append(j)
+			#print(data1)
 		elif(sign=='<'):
 			#print('less than')
 			if(t1!='varchar'):
@@ -361,15 +367,17 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 			#print('not equal')
 			var1PK = isPK(var1[0],var1[2])
 			
-			if(var2[0]=='\"' or var2[0]=="'"):
+			#print(var2)
+			if(var2[0][0]=='\"' or var2[0][0]=="'"):
 				var2[0] = var2[0][1:len(var2[0])-1]
+			#print(var2)
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
 				if(var1PK):	#if first is PK
-					if(j!=var2[0]):
+					if(str(j)!=str(var2[0])):
 						data1.append(j)
 				else:	#if both are not PK
-					if(data[var1[0]][j][var1[2]]!=var2[0]):
+					if(str(data[var1[0]][j][var1[2]])!=str(var2[0])):
 						data1.append(j)
 		return data1 #PKs of 1st table, 2nd table
 	else:
@@ -382,16 +390,16 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 		#if equality
 		if(sign=='='):
 			var2PK = isPK(var2[0],var2[2])
-			if(var1[0]=='\"' or var1[0]=="'"):
+			if(var1[0][0]=='\"' or var1[0][0]=="'"):
 				var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
 				if(var2PK):	#if first is PK
-					if(j==var1[0]):
+					if(str(j)==str(var1[0])):
 						data1.append(j)
 				else:	#if both are not PK
-					if(data[var2[0]][j][var2[2]]==var1[0]):
+					if(str(data[var2[0]][j][var2[2]])==str(var1[0])):
 						data1.append(j)
 		elif(sign=='<'):
 			#print('less than')
@@ -426,16 +434,16 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 		elif(sign=='!='):
 			#print('not equal')
 			var2PK = isPK(var2[0],var2[2])
-			if(var1[0]=='\"' or var1[0]=="'"):
+			if(var1[0][0]=='\"' or var1[0][0]=="'"):
 				var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
 				if(var2PK):	#if first is PK
-					if(j!=var1[0]):
+					if(str(j)!=str(var1[0])):
 						data1.append(j)
 				else:	#if both are not PK
-					if(data[var2[0]][j][var2[2]]!=var1[0]):
+					if(str(data[var2[0]][j][var2[2]])!=str(var1[0])):
 						data1.append(j)
 		
 		return data1 #PKs of 1st table, 2nd table
@@ -605,6 +613,7 @@ def evalAndOr(temp):
 def evaluateWhere(result,tables,tokens):
 	temp = []
 	nextCond = ''
+	#print(result)
 	while(len(tokens)!=0):
 		tokens = tokens[1:]
 		signIndex = -1
@@ -651,6 +660,7 @@ def evaluateWhere(result,tables,tokens):
 		if(len(tokens)!=0):
 			temp.append(cond)
 	
+	#print('temp',temp)
 	#print('before evalAndOr:',temp)
 	result = evalAndOr(temp)
 	return result
@@ -755,7 +765,7 @@ def joinWithWhereWithoutOn(tokens,where):
 
 		result = joinTables(tables)
 		result = evaluateWhere(result,tables,where)
-		print('jwow',result)
+		#print('jwow',result)
 		result = getColsFromKeys(cols,result[0],tables)
 		
 		#printData
@@ -768,7 +778,6 @@ def joinWithWhereWithOn(tokens,where):
 	if(cols):
 		tables,tokens = getJoinTables(tokens)
 		result = joinTables(tables)
-		
 		temp = []
 		nextCond = ''
 		while(len(tokens)!=0):
@@ -808,6 +817,8 @@ def joinWithWhereWithOn(tokens,where):
 			if(len(var1)>1 and len(var2)>1):
 				#print('both side')
 				temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
+				#print('t1',temp1)
+				#print('t2',temp2)
 				temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
 			elif(len(var1)>1):
 				#print('right side single')
@@ -823,6 +834,7 @@ def joinWithWhereWithOn(tokens,where):
 			if(len(tokens)!=0):
 				temp.append(cond)
 		
+		#print('before on: ',temp)
 		temp = evalAndOr(temp)
 		#print('after on: ',temp)
 		result = evaluateWhere(temp[0],tables,where)
@@ -849,7 +861,7 @@ def replaceAll(what,tokens):
 # ++++ SIMPLEST SELECT STATEMENT +++++++++++++++++++++++++++++++++++++++++++++++
 def normalSelect(tokens):
 	cols,tokens = getColsToPrint(tokens,'False');
-	print(cols,tokens)
+	#print(cols,tokens)
 	if(cols):
 		tables = tokens.pop(0)
 		printData = []
@@ -891,7 +903,7 @@ def joinWithoutOnWhere(tokens,where):
 		#populate list (per column)
 		printData = joinTables(tables)
 		result = evaluateWhere(printData,tables,where)
-		print('jwow',result)
+		#print('jwow',result)
 		result = getColsFromKeys(cols,result[0],tables)	
 
 		return result,cols
@@ -912,8 +924,8 @@ def evaluate(tokens,tables,rows):
 			idex = tokens.index('WHERE')
 		tempTok = tokens[0:idex]
 		tokens = tokens[idex:]
-		print(tempTok)
-		print(tokens)
+		#print(tempTok)
+		#print(tokens)
 		
 		result = []
 		cols = []
@@ -925,6 +937,7 @@ def evaluate(tokens,tables,rows):
 			tempTok = replaceAll([['join',','],['JOIN',',']],tempTok)
 			result,cols = joinWithWhereWithoutOn(tempTok,tokens)
 
+
 		if(result):
 			print()
 			if(len(result)==0):
@@ -935,6 +948,7 @@ def evaluate(tokens,tables,rows):
 
 	elif 'where' in tokens or 'WHERE' in tokens: #where only
 		idex = 0
+		tokens = replaceAll([['AND','and'],['OR','or']],tokens)
 		if('where' in tokens):
 			idex = tokens.index('where')
 		elif('WHERE' in tokens):
@@ -949,7 +963,7 @@ def evaluate(tokens,tables,rows):
 			index = tempTok.index('FROM');
 
 		if isCrossProduct(index,len(tempTok)):
-			print('crossproduct')
+			#print('crossproduct')
 			result,cols = joinWithoutOnWhere(tempTok,tokens)
 			if(result):
 				tabulate(result,cols)
@@ -957,7 +971,7 @@ def evaluate(tokens,tables,rows):
 			elif(type(result)!=bool and len(result)==0):
 				print("   ",len(result)," row(s) returned.",end="")
 		else:
-			print('not crossproduct')
+			#print('not crossproduct')
 			result,cols = normalSelectWhere(tempTok,tokens)
 			if(result):
 				tabulate(result,cols)
@@ -967,7 +981,7 @@ def evaluate(tokens,tables,rows):
 
 	elif 'join' in tokens or 'JOIN' in tokens: #join only
 		tokens = replaceAll([['join',','],['JOIN',',']],tokens)
-		print('start',	tokens)
+		#print('start',	tokens)
 		if('ON' in tokens or 'on' in tokens): #if there is an on statement
 			tokens = replaceAll([['ON','on'],['AND','and'],['OR','or']],tokens)
 			result,cols = joinWithOn(tokens)

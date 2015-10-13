@@ -48,6 +48,7 @@ while True:
 						print("   ERROR: Invalid ",message," near", error)
 				else:
 					tokens = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
+					#print(tokens)
 					if(tokens):
 						evalExp.main(tokens,MainHashTable,metaTB)
 			else:

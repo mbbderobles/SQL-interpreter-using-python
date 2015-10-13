@@ -11,7 +11,15 @@ def checkSemantics(query,data,tb):
 			if(type(i)==int):
 				tokens.append(i)
 			else:
-				if(i.lower()=='on'):
+				if('.' in i):
+					s = i.split('.')
+					tokens.append(s[0])
+					if(len(s)<2 or len(s)>2):
+						print('   ERROR: syntax error near',i)
+						return False
+					tokens.append('.')
+					tokens.append(s[1])
+				elif(i.lower()=='on'):
 					temp='on'
 					tokens.append(i)
 				elif(i.lower()=='join'):
@@ -32,7 +40,7 @@ def checkSemantics(query,data,tb):
 							tokens.append('.')
 							tokens.append(i)
 						else:
-							print('column \''+i+'\' not in any tables')
+							print('   ERROR: column \''+i+'\' not in any tables')
 							return False
 				elif(temp=='select' or temp=='join'):
 					tokens.append(i)

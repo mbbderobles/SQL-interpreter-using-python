@@ -38,21 +38,24 @@ while True:
 			#print('   All tokens valid')
 			tokens = myparser.parse(query)
 			#print('PARSER tokens',tokens)
-			if len(tokens) !=0: #the query is valid
-				#print("   Syntax is valid")
-				if(not('select' in tokens) and not('SELECT' in tokens)):
-					error,message = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
-					if(error == False):
-						evalExp.main(tokens,MainHashTable,metaTB)
+			if(tokens[0].lower()=='select' or tokens[0].lower()=='update' or tokens[0].lower()=='delete'):
+				if len(tokens) !=0: #the query is valid
+					#print("   Syntax is valid")
+					if(not('select' in tokens) and not('SELECT' in tokens)):
+						error,message = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
+						if(error == False):
+							evalExp.main(tokens,MainHashTable,metaTB)
+						else:
+							print("   ERROR: Invalid ",message," near", error)
 					else:
-						print("   ERROR: Invalid ",message," near", error)
+						tokens = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
+						#print(tokens)
+						if(tokens):
+							evalExp.main(tokens,MainHashTable,metaTB)
 				else:
-					tokens = myparser2.checkSemantics(tokens,MainHashTable,metaTB)
-					#print(tokens)
-					if(tokens):
-						evalExp.main(tokens,MainHashTable,metaTB)
+					print("   Syntax is invalid")
 			else:
-				print("   Syntax is invalid")
+				print("\tSyntax ERROR")
  		#if correct:
 			#start query optimization and evaluation
 

@@ -76,8 +76,7 @@ def p_select_statement(p):
 	| select_option from_statement natural_join_statement
 	| select_option from_statement join_statement where_statement expression
 	| select_option from_statement natural_join_statement where_statement expression'''
-
-			
+		
 def p_select_option(p):
 	'''select_option : columns
 	| ASTERISK'''
@@ -306,8 +305,10 @@ def p_expression2(p):
 def p_error(p):
 	if p:
 		print("   Syntax error at", p.value)
+		return []
 	else:
 		print("   Syntax error at EOF")
+		return []
 		
 
 	

@@ -30,6 +30,7 @@ def checkSemantics(query,data,tb):
 					tokens.append(i)
 				elif(temp=='on' or temp=='where'):
 					if('"' in i or "'" in i): #string
+						print(i)
 						tokens.append(i)
 					elif(i=='<' or i=='>' or i=='!=' or i=='=' or i.lower()=='and' or i.lower()=='or'):
 						tokens.append(i)

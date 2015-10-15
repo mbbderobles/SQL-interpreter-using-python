@@ -43,12 +43,23 @@ def getColsToPrint(tokens,join):
 	#if rows are in query
 	else:
 		i = tokens.pop(0)
+		temp = []
 		while(i.lower()!='from'):
 			if(i.lower() == 'from'):
 				break;
-			elif(i!=','):
-				cols.append(i)
+			elif(i==','):
+				if(len(temp)==1):
+					cols.append(temp[0])
+				else:
+					cols.append(temp[2])
+				temp = []
+			else:
+				temp.append(i)
 			i = tokens.pop(0)
+		if(len(temp)==1):
+			cols.append(temp[0])
+		else:
+			cols.append(temp[2])
 	return cols,tokens #returns columns and the remaining tokens
 
 ''' gets the PK of a certain table '''
@@ -1017,7 +1028,7 @@ def replaceAll(what,tokens):
 # ++++ SIMPLEST SELECT STATEMENT +++++++++++++++++++++++++++++++++++++++++++++++
 def normalSelect(tokens):
 	cols,tokens = getColsToPrint(tokens,'False');
-	#print(cols,tokens)
+
 	if(cols):
 		tables = tokens.pop(0)
 		printData = []
@@ -1071,7 +1082,7 @@ def evaluate(tokens,tables,rows):
 	global data
 	tb = tables
 	data = rows
-
+	print(tokens)
 	if ('where' in tokens or 'WHERE' in tokens) and ('join' in tokens or 'JOIN' in tokens): #can also have where+join-on here
 		idex = 0
 		if('where' in tokens):
@@ -1093,7 +1104,7 @@ def evaluate(tokens,tables,rows):
 			tempTok = replaceAll([['join',','],['JOIN',',']],tempTok)
 			result,cols = joinWithWhereWithoutOn(tempTok,tokens)
 
-		print(result)
+		#print(result)
 		if(result):
 			print()
 			if(len(result)==0):

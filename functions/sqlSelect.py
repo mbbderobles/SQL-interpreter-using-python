@@ -168,8 +168,13 @@ def typeCompatible(var1,var2):
 			if(type1==type2):
 				return True,type1,type2
 			else:
-				print(type1,'is not compatible with',type2)
-				return False,type1,type2
+				if(type1=='varchar' and type2=='date'):
+					return True,'varchar','date'
+				elif(type2=='varchar' and type1=='date'):
+					return True,'date','varchar'
+				else:
+					print(type1,'is not compatible with',type2)
+					return False,type1,type2
 		else:
 			return False,type1,type2
 	else:
@@ -186,6 +191,64 @@ def getNearest(var):
 		if(nearest==-1 or nearest>var.index('or')):
 			nearest = var.index('or')
 	return nearest
+
+def greaterThanDate(date1,date2):
+	if(date1[0]=='"' or date1[0]=="'"):
+		date1 = date1[1:len(date1)-1];
+	if(date2[0]=='"' or date2[0]=="'"):
+		date2 = date2[1:len(date2)-1];
+		
+	d1 = date1.split('/')
+	d2 = date2.split('/')
+
+	if(len(d1)==3 and len(d2)==3):
+		if(d1[2].isdigit() and d2[2].isdigit()):
+			if(int(d1[2])>int(d2[2])):
+				return True
+			elif(int(d1[2])==int(d2[2])):
+				if(d1[0].isdigit() and d2[0].isdigit()):
+					if(int(d1[0])>int(d2[0])):
+						return True
+					elif(int(d1[0])==int(d2[0])):
+						if(d1[1].isdigit() and d2[1].isdigit()):
+							if(int(d1[1])>int(d2[1])):
+								return True
+							else:
+								return False
+					else:
+						return False
+			else:
+				return False
+	return False
+	
+def lessThanDate(date1,date2):
+	if(date1[0]=='"' or date1[0]=="'"):
+		date1 = date1[1:len(date1)-1];
+	if(date2[0]=='"' or date2[0]=="'"):
+		date2 = date2[1:len(date2)-1];
+
+	d1 = date1.split('/')
+	d2 = date2.split('/')
+	
+	if(len(d1)==3 and len(d2)==3):
+		if(d1[2].isdigit() and d2[2].isdigit()):
+			if(int(d1[2])<int(d2[2])):
+				return True
+			elif(int(d1[2])==int(d2[2])):
+				if(d1[0].isdigit() and d2[0].isdigit()):
+					if(int(d1[0])<int(d2[0])):
+						return True
+					elif(int(d1[0])==int(d2[0])):
+						if(d1[1].isdigit() and d2[1].isdigit()):
+							if(int(d1[1])<int(d2[1])):
+								return True
+							else:
+								return False
+					else:
+						return False
+			else:
+				return False
+	return False
 
 # +++ JOIN ONLY FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -231,8 +294,30 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 							data1.append(j)
 							data2.append(k)
 		elif(sign=='<'):
-			#print('less than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var1PK = isPK(var1[0],var1[2])
+				var2PK = isPK(var2[0],var2[2])
+			
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var1[0]].keys():
+					for k in data[var2[0]].keys():
+						if(var1PK and var2PK):	#if both PK
+							if(lessThanDate(j,k)):
+								data1.append(j)
+								data2.append(k)
+						elif(var1PK):	#if first is PK
+							if(lessThanDate(j,data[var2[0]][k][var2[2]])):
+								data1.append(j)
+								data2.append(k)
+						elif(var2PK):	#if second is PK
+							if(lessThanDate(data[var1[0]][j][var1[2]],k)):
+								data1.append(j)
+								data2.append(k)
+						else:	#if both are not PK
+							if(lessThanDate(data[var2[0]][j][var2[2]],data[var1[0]][k][var1[2]])):
+								data1.append(j)
+								data2.append(k)
+			elif(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				var2PK = isPK(var2[0],var2[2])
 			
@@ -259,7 +344,30 @@ def evaluateJoinWithOnTwo(var1,sign,var2,tables,result):
 				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var1PK = isPK(var1[0],var1[2])
+				var2PK = isPK(var2[0],var2[2])
+			
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var1[0]].keys():
+					for k in data[var2[0]].keys():
+						if(var1PK and var2PK):	#if both PK
+							if(greaterThanDate(j,k)):
+								data1.append(j)
+								data2.append(k)
+						elif(var1PK):	#if first is PK
+							if(greaterThanDate(j,data[var2[0]][k][var2[2]])):
+								data1.append(j)
+								data2.append(k)
+						elif(var2PK):	#if second is PK
+							if(greaterThanDate(data[var1[0]][j][var1[2]],k)):
+								data1.append(j)
+								data2.append(k)
+						else:	#if both are not PK
+							if(greaterThanDate(data[var2[0]][j][var2[2]],data[var1[0]][k][var1[2]])):
+								data1.append(j)
+								data2.append(k)
+			elif(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				var2PK = isPK(var2[0],var2[2])
 			
@@ -321,8 +429,9 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 		if(sign=='='):
 			var1PK = isPK(var1[0],var1[2])
 
-			if(var2[0][0]=='\"' or var2[0][0]=="'"):
-				var2[0] = var2[0][1:len(var2[0])-1]
+			if(type(var2[0])==str):
+				if(var2[0][0]=='\"' or var2[0][0]=="'"):
+					var2[0] = var2[0][1:len(var2[0])-1]
 
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
@@ -335,7 +444,18 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 			#print(data1)
 		elif(sign=='<'):
 			#print('less than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var1PK = isPK(var1[0],var1[2])
+			
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var1[0]].keys():
+					if(var1PK):	#if first is PK
+						if(lessThanDate(j,var2[0])):
+							data1.append(j)
+					else:	#if both are not PK
+						if(lessThanDate(data[var1[0]][j][var1[2]],var2[0])):
+							data1.append(j)
+			elif(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 			
 				# ++ GETTING THE PK's of the matching data
@@ -350,7 +470,18 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var1PK = isPK(var1[0],var1[2])
+				
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var1[0]].keys():
+					if(var1PK):	#if first is PK
+						if(greaterThanDate(j,var2[0])):
+							data1.append(j)
+					else:	#if both are not PK
+						if(greaterThanDate(data[var1[0]][j][var1[2]],var2[0])):
+							data1.append(j)
+			elif(t1!='varchar'):
 				var1PK = isPK(var1[0],var1[2])
 				
 				# ++ GETTING THE PK's of the matching data
@@ -368,8 +499,9 @@ def evaluateJoinWithOnOneRight(var1,sign,var2,tables,result): #right is single
 			var1PK = isPK(var1[0],var1[2])
 			
 			#print(var2)
-			if(var2[0][0]=='\"' or var2[0][0]=="'"):
-				var2[0] = var2[0][1:len(var2[0])-1]
+			if(type(var2[0])==str):
+				if(var2[0][0]=='\"' or var2[0][0]=="'"):
+					var2[0] = var2[0][1:len(var2[0])-1]
 			#print(var2)
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var1[0]].keys():
@@ -390,8 +522,9 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 		#if equality
 		if(sign=='='):
 			var2PK = isPK(var2[0],var2[2])
-			if(var1[0][0]=='\"' or var1[0][0]=="'"):
-				var1[0] = var1[0][1:len(var1[0])-1]
+			if(type(var1[0])==str):
+				if(var1[0][0]=='\"' or var1[0][0]=="'"):
+					var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
@@ -403,7 +536,18 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 						data1.append(j)
 		elif(sign=='<'):
 			#print('less than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var2PK = isPK(var2[0],var2[2])
+			
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var2[0]].keys():
+					if(var2PK):	#if first is PK
+						if(lessThanDate(var1[0],j)):
+							data1.append(j)
+					else:	#if both are not PK
+						if(lessThanDate(var1[0],data[var2[0]][j][var2[2]])):
+							data1.append(j)
+			elif(t1!='varchar'):
 				var2PK = isPK(var2[0],var2[2])
 			
 				# ++ GETTING THE PK's of the matching data
@@ -418,7 +562,18 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 				print('< cannot be used on type varchar')
 		elif(sign=='>'):
 			#print('greater than')
-			if(t1!='varchar'):
+			if(t1=='date' or t2=='date'):
+				var2PK = isPK(var2[0],var2[2])
+				
+				# ++ GETTING THE PK's of the matching data
+				for j in data[var2[0]].keys():
+					if(var2PK):	#if first is PK
+						if(greaterThanDate(var1[0],j)):
+							data1.append(j)
+					else:	#if both are not PK
+						if(greaterThanDate(var1[0],data[var2[0]][j][var2[2]])):
+							data1.append(j)
+			elif(t1!='varchar'):
 				var2PK = isPK(var2[0],var2[2])
 				
 				# ++ GETTING THE PK's of the matching data
@@ -434,8 +589,9 @@ def evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result): #left is single
 		elif(sign=='!='):
 			#print('not equal')
 			var2PK = isPK(var2[0],var2[2])
-			if(var1[0][0]=='\"' or var1[0][0]=="'"):
-				var1[0] = var1[0][1:len(var1[0])-1]
+			if(type(var1[0])==str):
+				if(var1[0][0]=='\"' or var1[0][0]=="'"):
+					var1[0] = var1[0][1:len(var1[0])-1]
 			
 			# ++ GETTING THE PK's of the matching data
 			for j in data[var2[0]].keys():
@@ -937,7 +1093,7 @@ def evaluate(tokens,tables,rows):
 			tempTok = replaceAll([['join',','],['JOIN',',']],tempTok)
 			result,cols = joinWithWhereWithoutOn(tempTok,tokens)
 
-
+		#print(result)
 		if(result):
 			print()
 			if(len(result)==0):
@@ -945,6 +1101,8 @@ def evaluate(tokens,tables,rows):
 			else:
 				tabulate(result,cols)
 				print("   ",len(result)," row(s) returned.",end="");
+		elif(type(result)!=bool and len(result)==0):
+			print("   ",len(result)," row(s) returned.",end="")
 
 	elif 'where' in tokens or 'WHERE' in tokens: #where only
 		idex = 0

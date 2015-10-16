@@ -653,8 +653,16 @@ def joinTables(tables):
 
 ''' removes the rows that did not satisfy the query '''
 def filterTwoVar(temp1,temp2,var1tbl,var2tbl,tables,result):
-	in1 = tables.index(var1tbl)
-	in2 = tables.index(var2tbl)
+	if(var1tbl in tables):
+		in1 = tables.index(var1tbl)
+	else:
+		print('table',var1tbl,'was not selected')
+		return False
+	if(var2tbl in tables):
+		in2 = tables.index(var2tbl)
+	else:
+		print('table',var2tbl,'was not selected')
+		return False
 
 	j = 0
 	while j<len(result):
@@ -677,7 +685,11 @@ def filterTwoVar(temp1,temp2,var1tbl,var2tbl,tables,result):
 
 ''' removes the rows that did not satisfy the query '''
 def filterOneVar(temp1,var1tbl,tables,result):
-	in1 = tables.index(var1tbl)
+	if(var1tbl in tables):
+		in1 = tables.index(var1tbl)
+	else:
+		print('table',var1tbl,'was not selected')
+		return False
 
 	j = 0
 	while j<len(result):
@@ -812,15 +824,27 @@ def evaluateWhere(result,tables,tokens):
 		if(len(var1)>1 and len(var2)>1):
 			#print('both side')
 			temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
-			temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
+			x = filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy())
+			if(x!=False):
+				temp.append(x)
+			else:
+				return False
 		elif(len(var1)>1):
 			#print('right side single')
 			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-			temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
+			x = filterOneVar(temp1,var1[0],tables,result.copy())
+			if(x!=False):
+				temp.append(x)
+			else:
+				return False
 		elif(len(var2)>1):
 			#print('left side single')
 			temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
-			temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
+			x = filterOneVar(temp1,var2[0],tables,result.copy())
+			if(x!=False):
+				temp.append(x)
+			else:
+				return False
 		else:
 			print('both side single')
 		cond = nextCond
@@ -883,16 +907,28 @@ def joinWithOn(tokens):
 				temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
 				#print(temp1)
 				#print(temp2)
-				temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
+				x = filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			elif(len(var1)>1):
 				#print('right side single')
 				temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
 				#print(temp1)
-				temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
+				x = filterOneVar(temp1,var1[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			elif(len(var2)>1):
 				#print('left side single')
 				temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
-				temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
+				x = filterOneVar(temp1,var2[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			else:
 				print('both side single')
 			cond = nextCond
@@ -932,8 +968,9 @@ def joinWithWhereWithoutOn(tokens,where):
 
 		result = joinTables(tables)
 		result = evaluateWhere(result,tables,where)
-		#print('jwow',result)
-		result = getColsFromKeys(cols,result[0],tables)
+		if(result!=False):
+			#print('jwow',result)
+			result = getColsFromKeys(cols,result[0],tables)
 		
 		#printData
 		return result,cols
@@ -986,15 +1023,27 @@ def joinWithWhereWithOn(tokens,where):
 				temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
 				#print('t1',temp1)
 				#print('t2',temp2)
-				temp.append(filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy()))
+				x = filterTwoVar(temp1,temp2,var1[0],var2[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			elif(len(var1)>1):
 				#print('right side single')
 				temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-				temp.append(filterOneVar(temp1,var1[0],tables,result.copy()))
+				x = filterOneVar(temp1,var1[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			elif(len(var2)>1):
 				#print('left side single')
 				temp1 = evaluateJoinWithOnOneLeft(var1,sign,var2,tables,result)
-				temp.append(filterOneVar(temp1,var2[0],tables,result.copy()))
+				x = filterOneVar(temp1,var2[0],tables,result.copy())
+				if(x!=False):
+					temp.append(x)
+				else:
+					return False
 			else:
 				print('both side single')
 			cond = nextCond
@@ -1005,8 +1054,9 @@ def joinWithWhereWithOn(tokens,where):
 		temp = evalAndOr(temp)
 		#print('after on: ',temp)
 		result = evaluateWhere(temp[0],tables,where)
-		#print('after where: ',result)
-		result = getColsFromKeys(cols,result[0],tables)	
+		if(result!=False):
+			#print('after where: ',result)
+			result = getColsFromKeys(cols,result[0],tables)	
 		
 		return result,cols
 	return False,cols
@@ -1058,7 +1108,8 @@ def normalSelectWhere(tokens,where):
 			printData.append([i])
 		
 		result = evaluateWhere(printData,tables,where)
-		result = getColsFromKeys(cols,result[0],tables)	
+		if(result!=False):
+			result = getColsFromKeys(cols,result[0],tables)	
 		return result,cols
 	return False,cols
 
@@ -1070,8 +1121,9 @@ def joinWithoutOnWhere(tokens,where):
 		#populate list (per column)
 		printData = joinTables(tables)
 		result = evaluateWhere(printData,tables,where)
-		#print('jwow',result)
-		result = getColsFromKeys(cols,result[0],tables)	
+		if(result!=False):
+			#print('jwow',result)
+			result = getColsFromKeys(cols,result[0],tables)	
 
 		return result,cols
 	return False,cols

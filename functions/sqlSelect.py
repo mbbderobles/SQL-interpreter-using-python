@@ -794,7 +794,7 @@ def evalAndOr(temp):
 	return temp
 
 def evaluateWhere(result,tables,tokens):
-	print(result)
+	#print(result)
 	temp = []
 	nextCond = ''
 	#print(result)
@@ -826,7 +826,7 @@ def evaluateWhere(result,tables,tokens):
 		else:
 			tokens = []
 
-		print(var1,sign,var2)
+		#print(var1,sign,var2)
 		if(len(var1)>1 and len(var2)>1):
 			#print('both side')
 			temp1,temp2 = evaluateJoinWithOnTwo(var1,sign,var2,tables,result)
@@ -838,7 +838,7 @@ def evaluateWhere(result,tables,tokens):
 		elif(len(var1)>1):
 			#print('right side single')
 			temp1 = evaluateJoinWithOnOneRight(var1,sign,var2,tables,result)
-			print(temp1)
+			#print(temp1)
 			x = filterOneVar(temp1,var1[0],tables,result.copy())
 			if(x!=False):
 				temp.append(x)
